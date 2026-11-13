@@ -1,0 +1,26 @@
+{
+  "company_id": "nordsense",
+  "name": "NordSense AB (simulated)",
+  "website": "https://nordsense.example.com",
+  "visibility": "published",
+  "is_simulated": true,
+  "updated_at": "2026-11-13T09:00:00Z",
+  "claims": [
+    {"id": "what-1", "field": "what_it_does", "value": "Develops wireless vibration and temperature sensors for monitoring industrial machinery", "kind": "stated", "evidence_url": "https://nordsense.example.com/about", "snippet": "We develop wireless vibration and temperature sensors that keep industrial machinery running.", "retrieved_at": "2026-11-13", "confidence": 0.95},
+    {"id": "prod-1", "field": "products_services", "value": "NordSense Edge battery-powered vibration sensor", "kind": "stated", "evidence_url": "https://nordsense.example.com/products", "snippet": "NordSense Edge is a battery-powered vibration sensor with a five-year battery life.", "retrieved_at": "2026-11-13", "confidence": 0.95},
+    {"id": "prod-2", "field": "products_services", "value": "Condition-monitoring dashboard (SaaS)", "kind": "stated", "evidence_url": "https://nordsense.example.com/products", "snippet": "Our cloud dashboard shows machine health in real time.", "retrieved_at": "2026-11-13", "confidence": 0.9},
+    {"id": "tech-1", "field": "technologies", "value": "industrial IoT sensors", "kind": "stated", "evidence_url": "https://nordsense.example.com/about", "snippet": "Industrial IoT sensors are at the core of everything we build.", "retrieved_at": "2026-11-13", "confidence": 0.95},
+    {"id": "tech-2", "field": "technologies", "value": "edge machine learning for anomaly detection", "kind": "inferred", "evidence_url": "https://news.example.com/nordsense-edge-ml", "snippet": "The sensors reportedly flag anomalies on the device itself.", "retrieved_at": "2026-11-13", "confidence": 0.6},
+    {"id": "exp-1", "field": "expertise", "value": "predictive maintenance", "kind": "inferred", "evidence_url": "https://nordsense.example.com/cases", "snippet": "Customers cut unplanned stops by acting on early warnings.", "retrieved_at": "2026-11-13", "confidence": 0.75},
+    {"id": "app-1", "field": "application_areas", "value": "pulp and paper mills", "kind": "stated", "evidence_url": "https://nordsense.example.com/cases", "snippet": "Installed in pulp and paper mills across the Nordics.", "retrieved_at": "2026-11-13", "confidence": 0.9},
+    {"id": "mkt-1", "field": "markets", "value": "Nordic process industry", "kind": "stated", "evidence_url": "https://nordsense.example.com/about", "snippet": "We serve the Nordic process industry.", "retrieved_at": "2026-11-13", "confidence": 0.9},
+    {"id": "ind-1", "field": "industries", "value": "forestry and paper", "kind": "stated", "evidence_url": "https://nordsense.example.com/cases", "snippet": "Our largest customers are in forestry and paper.", "retrieved_at": "2026-11-13", "confidence": 0.85},
+    {"id": "ind-2", "field": "industries", "value": "mining", "kind": "inferred", "evidence_url": "https://news.example.com/nordsense-mining", "snippet": "NordSense is said to be talking to mining operators.", "retrieved_at": "2026-11-13", "confidence": 0.5},
+    {"id": "cust-1", "field": "customer_groups", "value": "maintenance managers at process plants", "kind": "stated", "evidence_url": "https://nordsense.example.com/products", "snippet": "Built for maintenance managers at process plants.", "retrieved_at": "2026-11-13", "confidence": 0.85},
+    {"id": "geo-1", "field": "geographic_focus", "value": "Sweden, Finland and Norway", "kind": "stated", "evidence_url": "https://nordsense.example.com/contact", "snippet": "Offices and partners in Sweden, Finland and Norway.", "retrieved_at": "2026-11-13", "confidence": 0.9},
+    {"id": "prio-1", "field": "development_priorities", "value": "expand into the mining sector", "kind": "stated", "evidence_url": "https://nordsense.example.com/news/2026-plans", "snippet": "In 2027 we plan to expand into the mining sector.", "retrieved_at": "2026-11-13", "confidence": 0.85},
+    {"id": "proj-1", "field": "projects", "value": "pilot installation at a regional sawmill", "kind": "inferred", "evidence_url": "https://news.example.com/sawmill-pilot", "snippet": "A local sawmill is piloting wireless vibration sensors.", "retrieved_at": "2026-11-13", "confidence": 0.55, "cached_snapshot": true},
+    {"id": "topic-1", "field": "topics", "value": "Industry 4.0", "kind": "inferred", "evidence_url": "https://nordsense.example.com/about", "snippet": "Industrial IoT sensors are at the core of everything we build.", "retrieved_at": "2026-11-13", "confidence": 0.7}
+  ],
+  "missing_fields": ["collaborations"]
+}

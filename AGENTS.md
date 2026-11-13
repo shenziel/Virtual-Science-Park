@@ -151,6 +151,7 @@ The canonical files are in `contracts/`. The summaries below are for orientation
 ## 7. Team workflow
 
 - **One branch per person** (`backend2-profiler`, `ui1-profile`, …) and small pull requests. Backend 1 merges on the hour, every hour, and posts "main is green" in the team chat.
+- **Check the branch before every commit:** run `git branch --show-current` and confirm it is your own branch, not `main`. Branches can change between commands (e.g. after a pull or a merge). If you are on the wrong branch, stop and switch before committing. Assistants must run this check themselves.
 - **Checkpoints:** at **19:00**, one company runs end to end. If it doesn't, everyone stops adding features and helps integrate. At **07:30**, all branches are merged and the tools are wired to real data.
 - Before pushing, run `pytest` for your folder and make sure it passes. Never delete, skip or weaken tests to get a green build.
 - Use Conventional Commits (`feat(profiler): …`). Keep any AI co-author trailers.
@@ -180,6 +181,7 @@ When unsure, **stop and ask the human**.
 ## 9. Definition of done (per pull request)
 
 - [ ] Only your folders changed
+- [ ] Committed on your own branch (checked with `git branch --show-current`), never on `main`
 - [ ] Output validates against `contracts/` (Pydantic)
 - [ ] Tests pass, including a `403` case for any new write endpoint
 - [ ] Simulated or cached data is labelled

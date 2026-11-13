@@ -1,0 +1,25 @@
+{
+  "company_id": "medtrace",
+  "name": "MedTrace Health AB (simulated)",
+  "website": "https://medtrace.example.com",
+  "visibility": "published",
+  "is_simulated": true,
+  "updated_at": "2026-11-13T09:00:00Z",
+  "claims": [
+    {"id": "what-1", "field": "what_it_does", "value": "Builds software for remote monitoring of patients after surgery", "kind": "stated", "evidence_url": "https://medtrace.example.com", "snippet": "MedTrace lets care teams follow patients at home after surgery.", "retrieved_at": "2026-11-13", "confidence": 0.95},
+    {"id": "prod-1", "field": "products_services", "value": "MedTrace Home patient app", "kind": "stated", "evidence_url": "https://medtrace.example.com/product", "snippet": "MedTrace Home is the app patients use to report how they feel.", "retrieved_at": "2026-11-13", "confidence": 0.9},
+    {"id": "tech-1", "field": "technologies", "value": "wearable data analytics", "kind": "stated", "evidence_url": "https://medtrace.example.com/product", "snippet": "We analyse data from consumer wearables to spot early warning signs.", "retrieved_at": "2026-11-13", "confidence": 0.9},
+    {"id": "tech-2", "field": "technologies", "value": "machine learning risk scoring", "kind": "inferred", "evidence_url": "https://news.example.com/medtrace-ml", "snippet": "The startup uses machine learning to rank patients by risk.", "retrieved_at": "2026-11-13", "confidence": 0.6},
+    {"id": "exp-1", "field": "expertise", "value": "medical device software regulation (MDR)", "kind": "inferred", "evidence_url": "https://medtrace.example.com/quality", "snippet": "Our quality system follows the EU Medical Device Regulation.", "retrieved_at": "2026-11-13", "confidence": 0.75},
+    {"id": "app-1", "field": "application_areas", "value": "post-operative home care", "kind": "stated", "evidence_url": "https://medtrace.example.com", "snippet": "MedTrace lets care teams follow patients at home after surgery.", "retrieved_at": "2026-11-13", "confidence": 0.9},
+    {"id": "mkt-1", "field": "markets", "value": "Swedish regional healthcare", "kind": "stated", "evidence_url": "https://medtrace.example.com/customers", "snippet": "Used by care teams in several Swedish regions.", "retrieved_at": "2026-11-13", "confidence": 0.85},
+    {"id": "ind-1", "field": "industries", "value": "healthcare", "kind": "stated", "evidence_url": "https://medtrace.example.com", "snippet": "Software for healthcare.", "retrieved_at": "2026-11-13", "confidence": 0.9},
+    {"id": "cust-1", "field": "customer_groups", "value": "hospitals and regional healthcare providers", "kind": "stated", "evidence_url": "https://medtrace.example.com/customers", "snippet": "Our customers are hospitals and regional healthcare providers.", "retrieved_at": "2026-11-13", "confidence": 0.85},
+    {"id": "geo-1", "field": "geographic_focus", "value": "Sweden", "kind": "stated", "evidence_url": "https://medtrace.example.com/customers", "snippet": "Used by care teams in several Swedish regions.", "retrieved_at": "2026-11-13", "confidence": 0.8},
+    {"id": "prio-1", "field": "development_priorities", "value": "run a clinical validation study", "kind": "stated", "evidence_url": "https://medtrace.example.com/news/validation", "snippet": "Our priority for 2027 is a clinical validation study.", "retrieved_at": "2026-11-13", "confidence": 0.85},
+    {"id": "proj-1", "field": "projects", "value": "home-monitoring pilot for hip replacement patients", "kind": "inferred", "evidence_url": "https://news.example.com/medtrace-pilot", "snippet": "Hip replacement patients are being followed at home in a pilot.", "retrieved_at": "2026-11-13", "confidence": 0.6},
+    {"id": "collab-1", "field": "collaborations", "value": "pilot partnership with a regional hospital", "kind": "inferred", "evidence_url": "https://news.example.com/medtrace-pilot", "snippet": "The pilot runs together with a regional hospital.", "retrieved_at": "2026-11-13", "confidence": 0.6},
+    {"id": "topic-1", "field": "topics", "value": "digital health", "kind": "inferred", "evidence_url": "https://medtrace.example.com", "snippet": "MedTrace lets care teams follow patients at home after surgery.", "retrieved_at": "2026-11-13", "confidence": 0.8}
+  ],
+  "missing_fields": []
+}

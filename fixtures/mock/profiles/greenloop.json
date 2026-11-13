@@ -1,0 +1,23 @@
+{
+  "company_id": "greenloop",
+  "name": "GreenLoop Materials AB (simulated)",
+  "website": "https://greenloop.example.com",
+  "visibility": "private",
+  "is_simulated": true,
+  "updated_at": "2026-11-13T09:00:00Z",
+  "claims": [
+    {"id": "what-1", "field": "what_it_does", "value": "Makes plastic-free food packaging from forest residues", "kind": "stated", "evidence_url": "https://greenloop.example.com", "snippet": "We turn forest residues into plastic-free food packaging.", "retrieved_at": "2026-11-13", "confidence": 0.95},
+    {"id": "prod-1", "field": "products_services", "value": "moulded fibre food trays", "kind": "stated", "evidence_url": "https://greenloop.example.com/products", "snippet": "Our moulded fibre trays replace plastic trays for meat and vegetables.", "retrieved_at": "2026-11-13", "confidence": 0.9},
+    {"id": "tech-1", "field": "technologies", "value": "lignin-based barrier coatings", "kind": "stated", "evidence_url": "https://greenloop.example.com/technology", "snippet": "A lignin-based barrier coating keeps grease and moisture out.", "retrieved_at": "2026-11-13", "confidence": 0.9},
+    {"id": "tech-2", "field": "technologies", "value": "fibre moulding", "kind": "inferred", "evidence_url": "https://greenloop.example.com/technology", "snippet": "Trays are pressed from wet fibre in heated moulds.", "retrieved_at": "2026-11-13", "confidence": 0.7},
+    {"id": "exp-1", "field": "expertise", "value": "materials chemistry", "kind": "inferred", "evidence_url": "https://greenloop.example.com/team", "snippet": "Founded by two PhDs in wood chemistry.", "retrieved_at": "2026-11-13", "confidence": 0.7},
+    {"id": "app-1", "field": "application_areas", "value": "food packaging", "kind": "stated", "evidence_url": "https://greenloop.example.com/products", "snippet": "Designed for fresh food packaging.", "retrieved_at": "2026-11-13", "confidence": 0.9},
+    {"id": "mkt-1", "field": "markets", "value": "European food retail", "kind": "inferred", "evidence_url": "https://news.example.com/greenloop-retail", "snippet": "GreenLoop is in talks with European grocery chains.", "retrieved_at": "2026-11-13", "confidence": 0.55},
+    {"id": "ind-1", "field": "industries", "value": "packaging", "kind": "stated", "evidence_url": "https://greenloop.example.com", "snippet": "A new kind of packaging company.", "retrieved_at": "2026-11-13", "confidence": 0.85},
+    {"id": "cust-1", "field": "customer_groups", "value": "food producers", "kind": "stated", "evidence_url": "https://greenloop.example.com/products", "snippet": "We work with food producers who want to drop plastic.", "retrieved_at": "2026-11-13", "confidence": 0.85},
+    {"id": "prio-1", "field": "development_priorities", "value": "replace plastic films in food packaging", "kind": "stated", "evidence_url": "https://greenloop.example.com/news/roadmap", "snippet": "Next we want to replace plastic films, not just trays.", "retrieved_at": "2026-11-13", "confidence": 0.85},
+    {"id": "collab-1", "field": "collaborations", "value": "research collaboration with a university materials lab", "kind": "inferred", "evidence_url": "https://news.example.com/greenloop-university", "snippet": "The company shares lab space with a university materials group.", "retrieved_at": "2026-11-13", "confidence": 0.5},
+    {"id": "topic-1", "field": "topics", "value": "circular economy", "kind": "inferred", "evidence_url": "https://greenloop.example.com", "snippet": "We turn forest residues into plastic-free food packaging.", "retrieved_at": "2026-11-13", "confidence": 0.75}
+  ],
+  "missing_fields": ["geographic_focus", "projects"]
+}

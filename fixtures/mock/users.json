@@ -1,0 +1,6 @@
+[
+  {"id": "u-admin", "email": "admin@bsp.example.com", "role": "admin", "company_id": null, "password": "demo-admin-2026"},
+  {"id": "u-nordsense", "email": "demo@nordsense.example.com", "role": "company", "company_id": "nordsense", "password": "demo-nordsense-2026"},
+  {"id": "u-greenloop", "email": "demo@greenloop.example.com", "role": "company", "company_id": "greenloop", "password": "demo-greenloop-2026"},
+  {"id": "u-medtrace", "email": "demo@medtrace.example.com", "role": "company", "company_id": "medtrace", "password": "demo-medtrace-2026"}
+]
