@@ -2,10 +2,12 @@
 Matcher agent — scores opportunities against a company profile and
 produces ranked Recommendation objects.
 
+Imports all shared types from contracts.models (source of truth).
+
 Scoring formula (weights in config.py):
   score = w_topic * topic_overlap
         + w_timeline * timeline_score
-        + w_location * location_score
+        + w_location * location_format_score
 
 user_confirmed claims receive a boost (config.USER_CONFIRMED_BOOST) in the
 topic overlap calculation so they visibly affect the ranking.
@@ -20,10 +22,38 @@ import os
 from datetime import date, timedelta
 from typing import List, Optional, Sequence
 
+from contracts.models import (
+    Claim,
+    ClaimKind,
+    Opportunity,
+    OpportunityFormat,
+    Profile,
+    Recommendation,
+)
+
 from . import config
-from .models import Claim, ClaimKind, CompanyProfile, Opportunity, Recommendation
 
 logger = logging.getLogger(__name__)
+
+
+# ---------------------------------------------------------------------------
+# Helpers — topic field names (must match ProfileField enum values)
+# ---------------------------------------------------------------------------
+
+TOPIC_FIELDS = {
+    "technologies",
+    "expertise",
+    "topics",
+    "products_services",
+    "application_areas",
+    "markets",
+    "industries",
+    "development_priorities",
+    "projects",
+    "collaborations",
+    "what_it_does",
+    "customer_groups",
+}
 
 
 # ---------------------------------------------------------------------------
@@ -31,12 +61,12 @@ logger = logging.getLogger(__name__)
 # ---------------------------------------------------------------------------
 
 def _topic_overlap_score(
-    profile: CompanyProfile,
+    profile: Profile,
     opportunity: Opportunity,
 ) -> tuple[float, List[Claim]]:
     """
     Jaccard-style overlap between opportunity topics and profile claim values.
-    user_confirmed claims are boosted.
+    user_confirmed claims receive a boost (USER_CONFIRMED_BOOST).
 
     Returns (score 0–1, list of matched claims).
     """
@@ -49,12 +79,7 @@ def _topic_overlap_score(
     weighted_total = 0.0
 
     for claim in profile.claims:
-        relevant_fields = {
-            "technologies", "expertise", "topics",
-            "products_services", "application_areas",
-            "markets", "industries", "priorities", "projects",
-        }
-        if claim.field not in relevant_fields:
+        if claim.field.value not in TOPIC_FIELDS:
             continue
 
         weight = (
@@ -79,7 +104,7 @@ def _topic_overlap_score(
     if weighted_total == 0:
         return 0.0, []
 
-    # Normalise by union size (Jaccard-ish): hits / (total_claims + opp_topics - hits)
+    # Jaccard-ish: hits / (total_claims + opp_topics - hits)
     union = weighted_total + len(opp_topics) - weighted_hits
     score = weighted_hits / union if union > 0 else 0.0
     return min(score, 1.0), matched
@@ -93,7 +118,7 @@ def _timeline_score(opportunity: Opportunity, today: Optional[date] = None) -> f
     if today is None:
         today = date.today()
 
-    relevant = opportunity.relevant_date()
+    relevant = opportunity.deadline or opportunity.event_date or opportunity.published
     if relevant is None:
         return config.TIMELINE_NO_DATE_SCORE
 
@@ -116,20 +141,18 @@ def _timeline_score(opportunity: Opportunity, today: Optional[date] = None) -> f
 
 
 def _location_format_score(
-    profile: CompanyProfile,
+    profile: Profile,
     opportunity: Opportunity,
 ) -> float:
     """
     Returns 1.0 for online opportunities (universally accessible),
     or checks geographic overlap if the opportunity is in_person.
     """
-    from .models import OpportunityFormat
-
     if opportunity.format == OpportunityFormat.online:
         return 1.0
 
-    geo_focus = profile.geographic_focus()
-    if not geo_focus:
+    geo_claims = [c for c in profile.claims if c.field.value == "geographic_focus"]
+    if not geo_claims:
         # No geographic restriction stated — assume open
         return 0.7
 
@@ -142,9 +165,11 @@ def _location_format_score(
         (opportunity.audience or "") + " " + (opportunity.eligibility_text or "")
     ).lower()
 
-    for region in geo_focus:
-        if region in audience_text:
-            return 1.0
+    for claim in geo_claims:
+        # Check each part of the geo value (e.g. "Sweden, Finland and Norway")
+        for region in claim.value.lower().replace(",", " ").replace(" and ", " ").split():
+            if len(region) > 2 and region in audience_text:
+                return 1.0
 
     return 0.3  # In-person but region mismatch
 
@@ -154,31 +179,23 @@ def _location_format_score(
 # ---------------------------------------------------------------------------
 
 def _build_why_deterministic(
-    profile: CompanyProfile,
+    profile: Profile,
     opportunity: Opportunity,
     matched_claims: List[Claim],
-    score: float,
 ) -> str:
-    """Fallback `why` when no LLM is available."""
-    if not matched_claims:
-        return (
-            f"'{opportunity.title}' was selected based on general relevance to "
-            f"{profile.company_name}'s profile. No specific claims were matched."
-        )
-
+    """Fallback `why` when no LLM is available. Always returns a non-empty string."""
     claim_summaries = "; ".join(
-        f"'{c.value}' ({c.field})" for c in matched_claims[:3]
+        f"'{c.value}' ({c.field.value})" for c in matched_claims[:3]
     )
     suffix = f" and {len(matched_claims) - 3} more" if len(matched_claims) > 3 else ""
     return (
-        f"'{opportunity.title}' matches {profile.company_name} because of overlapping "
-        f"topics with: {claim_summaries}{suffix}. "
-        f"Overall match score: {score:.0%}."
+        f"'{opportunity.title}' matches {profile.name} because of overlapping "
+        f"topics with: {claim_summaries}{suffix}."
     )
 
 
 def _build_why_llm(
-    profile: CompanyProfile,
+    profile: Profile,
     opportunity: Opportunity,
     matched_claims: List[Claim],
     score: float,
@@ -198,14 +215,14 @@ def _build_why_llm(
         client = openai.OpenAI(**client_kwargs)
 
         claim_lines = "\n".join(
-            f"- [{c.kind.value}] {c.field}: {c.value}" for c in matched_claims[:5]
+            f"- [{c.kind.value}] {c.field.value}: {c.value}" for c in matched_claims[:5]
         )
         prompt_path = os.path.join(os.path.dirname(__file__), "prompts", "why_v1.md")
         with open(prompt_path) as fh:
             system_prompt = fh.read()
 
         user_message = (
-            f"Company: {profile.company_name}\n"
+            f"Company: {profile.name}\n"
             f"Opportunity: {opportunity.title} ({opportunity.type.value})\n"
             f"Opportunity topics: {', '.join(opportunity.topics)}\n"
             f"Matched profile claims:\n{claim_lines}\n"
@@ -226,18 +243,18 @@ def _build_why_llm(
 
     except Exception as exc:  # noqa: BLE001
         logger.warning("LLM why-generation failed (%s); using deterministic fallback.", exc)
-        return _build_why_deterministic(profile, opportunity, matched_claims, score)
+        return _build_why_deterministic(profile, opportunity, matched_claims)
 
 
 def _build_why(
-    profile: CompanyProfile,
+    profile: Profile,
     opportunity: Opportunity,
     matched_claims: List[Claim],
     score: float,
 ) -> str:
     if config.LLM_API_KEY:
         return _build_why_llm(profile, opportunity, matched_claims, score)
-    return _build_why_deterministic(profile, opportunity, matched_claims, score)
+    return _build_why_deterministic(profile, opportunity, matched_claims)
 
 
 # ---------------------------------------------------------------------------
@@ -245,7 +262,7 @@ def _build_why(
 # ---------------------------------------------------------------------------
 
 def match(
-    profile: CompanyProfile,
+    profile: Profile,
     opportunities: Sequence[Opportunity],
     today: Optional[date] = None,
 ) -> List[Recommendation]:
@@ -253,7 +270,10 @@ def match(
     Score every opportunity against the company profile and return a list of
     Recommendation objects sorted by descending score.
 
-    Only results with score >= config.MIN_SCORE_THRESHOLD are returned.
+    Only results with:
+      - score >= config.MIN_SCORE_THRESHOLD
+      - at least 1 matched claim (required by contracts.models.Recommendation)
+    are returned.
     """
     results: List[Recommendation] = []
 
@@ -268,6 +288,11 @@ def match(
             + config.WEIGHT_LOCATION_FORMAT * location_sc
         )
         score = round(min(max(score, 0.0), 1.0), 4)
+
+        # Contract requires matched_claims min_length=1
+        if not matched_claims:
+            logger.debug("Skipping '%s' — no matched claims.", opp.title)
+            continue
 
         if score < config.MIN_SCORE_THRESHOLD:
             logger.debug("Skipping '%s' — score %.4f below threshold.", opp.title, score)
