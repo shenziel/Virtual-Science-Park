@@ -1,0 +1,55 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "recommendation.json",
+  "additionalProperties": false,
+  "properties": {
+    "company_id": {
+      "pattern": "^[a-z0-9][a-z0-9-]*$",
+      "title": "Company Id",
+      "type": "string"
+    },
+    "opportunity_id": {
+      "pattern": "^[a-z0-9][a-z0-9-]*$",
+      "title": "Opportunity Id",
+      "type": "string"
+    },
+    "score": {
+      "maximum": 1.0,
+      "minimum": 0.0,
+      "title": "Score",
+      "type": "number"
+    },
+    "why": {
+      "description": "Must reference the matched claims.",
+      "minLength": 1,
+      "title": "Why",
+      "type": "string"
+    },
+    "matched_claims": {
+      "description": "Claim ids from the company profile.",
+      "items": {
+        "pattern": "^[a-z0-9][a-z0-9-]*$",
+        "type": "string"
+      },
+      "minItems": 1,
+      "title": "Matched Claims",
+      "type": "array"
+    },
+    "caveats": {
+      "description": "Always contains 'eligibility not confirmed'.",
+      "minLength": 1,
+      "title": "Caveats",
+      "type": "string"
+    }
+  },
+  "required": [
+    "company_id",
+    "opportunity_id",
+    "score",
+    "why",
+    "matched_claims",
+    "caveats"
+  ],
+  "title": "Recommendation",
+  "type": "object"
+}

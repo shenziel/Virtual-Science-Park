@@ -1,0 +1,109 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "claim.json",
+  "$defs": {
+    "ClaimKind": {
+      "enum": [
+        "stated",
+        "inferred",
+        "user_confirmed"
+      ],
+      "title": "ClaimKind",
+      "type": "string"
+    },
+    "ProfileField": {
+      "description": "The profile areas from AGENTS.md §1. Every one must be covered or listed in `missing_fields`.",
+      "enum": [
+        "what_it_does",
+        "products_services",
+        "technologies",
+        "expertise",
+        "application_areas",
+        "markets",
+        "industries",
+        "customer_groups",
+        "geographic_focus",
+        "development_priorities",
+        "projects",
+        "collaborations",
+        "topics"
+      ],
+      "title": "ProfileField",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "id": {
+      "description": "Unique within the company profile, e.g. 'tech-3'.",
+      "pattern": "^[a-z0-9][a-z0-9-]*$",
+      "title": "Id",
+      "type": "string"
+    },
+    "field": {
+      "$ref": "#/$defs/ProfileField"
+    },
+    "value": {
+      "minLength": 1,
+      "title": "Value",
+      "type": "string"
+    },
+    "kind": {
+      "$ref": "#/$defs/ClaimKind"
+    },
+    "evidence_url": {
+      "anyOf": [
+        {
+          "pattern": "^https?://\\S+$",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "Required unless kind is user_confirmed.",
+      "title": "Evidence Url"
+    },
+    "snippet": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "Required (verbatim quote) when kind is stated.",
+      "title": "Snippet"
+    },
+    "retrieved_at": {
+      "format": "date",
+      "title": "Retrieved At",
+      "type": "string"
+    },
+    "confidence": {
+      "maximum": 1.0,
+      "minimum": 0.0,
+      "title": "Confidence",
+      "type": "number"
+    },
+    "cached_snapshot": {
+      "default": false,
+      "description": "True if the source page was saved by hand.",
+      "title": "Cached Snapshot",
+      "type": "boolean"
+    }
+  },
+  "required": [
+    "id",
+    "field",
+    "value",
+    "kind",
+    "retrieved_at",
+    "confidence"
+  ],
+  "title": "Claim",
+  "type": "object"
+}

@@ -1,0 +1,157 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "opportunity.json",
+  "$defs": {
+    "OpportunityFormat": {
+      "enum": [
+        "online",
+        "in_person"
+      ],
+      "title": "OpportunityFormat",
+      "type": "string"
+    },
+    "OpportunityType": {
+      "enum": [
+        "funding",
+        "event",
+        "testbed"
+      ],
+      "title": "OpportunityType",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "id": {
+      "pattern": "^[a-z0-9][a-z0-9-]*$",
+      "title": "Id",
+      "type": "string"
+    },
+    "type": {
+      "$ref": "#/$defs/OpportunityType"
+    },
+    "title": {
+      "minLength": 1,
+      "title": "Title",
+      "type": "string"
+    },
+    "url": {
+      "pattern": "^https?://\\S+$",
+      "title": "Url",
+      "type": "string"
+    },
+    "source": {
+      "description": "e.g. 'Vinnova', 'Blue Science Park events'.",
+      "minLength": 1,
+      "title": "Source",
+      "type": "string"
+    },
+    "published": {
+      "anyOf": [
+        {
+          "format": "date",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Published"
+    },
+    "deadline": {
+      "anyOf": [
+        {
+          "format": "date",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Deadline"
+    },
+    "event_date": {
+      "anyOf": [
+        {
+          "format": "date",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Event Date"
+    },
+    "format": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/OpportunityFormat"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null
+    },
+    "audience": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Audience"
+    },
+    "eligibility_text": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Eligibility Text"
+    },
+    "topics": {
+      "items": {
+        "minLength": 1,
+        "type": "string"
+      },
+      "title": "Topics",
+      "type": "array"
+    },
+    "retrieved_at": {
+      "format": "date",
+      "title": "Retrieved At",
+      "type": "string"
+    },
+    "is_simulated": {
+      "default": false,
+      "title": "Is Simulated",
+      "type": "boolean"
+    },
+    "cached_snapshot": {
+      "default": false,
+      "title": "Cached Snapshot",
+      "type": "boolean"
+    }
+  },
+  "required": [
+    "id",
+    "type",
+    "title",
+    "url",
+    "source",
+    "retrieved_at"
+  ],
+  "title": "Opportunity",
+  "type": "object"
+}
