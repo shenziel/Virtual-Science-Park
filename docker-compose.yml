@@ -1,0 +1,57 @@
+# Virtual Science Park — local demo stack.
+# Owner: Backend 1. Cut-list item #1: everything must also run without Docker.
+#
+#   cp .env.example .env            # fill in model settings
+#   docker compose up --build       # api :8000, ui :8501
+#   docker compose --profile ollama up --build   # also start a local model
+#   docker compose run --rm api python -m agents.profiler   # one-off agent run
+
+x-app: &app
+  build:
+    context: .
+    dockerfile: api/Dockerfile
+  env_file:
+    - path: .env
+      required: false
+  environment:
+    DATABASE_URL: sqlite:////data/vsp.db
+    CACHE_DIR: /data/cache
+  volumes:
+    - vsp-data:/data          # SQLite DB + cached pages/agent output
+    - ./fixtures:/app/fixtures:ro
+
+services:
+  api:
+    <<: *app
+    command: uvicorn api.main:app --host 0.0.0.0 --port 8000
+    ports:
+      - "8000:8000"
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/health')"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+
+  ui:
+    <<: *app
+    command: streamlit run ui/app.py --server.address 0.0.0.0 --server.port 8501
+    environment:
+      API_URL: http://api:8000
+    ports:
+      - "8501:8501"
+    depends_on:
+      api:
+        condition: service_healthy
+
+  # Optional local model (MODEL_RUNTIME=ollama). Start with --profile ollama.
+  ollama:
+    image: ollama/ollama:0.12.3
+    profiles: ["ollama"]
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama-models:/root/.ollama
+
+volumes:
+  vsp-data:
+  ollama-models:
