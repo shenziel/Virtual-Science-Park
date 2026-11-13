@@ -39,7 +39,7 @@ Don't add other languages, frameworks, databases or paid services.
 
 | Role | Responsibility | Owns (only edits these) |
 |---|---|---|
-| **Backend 1** | Lead, integrator, API + chat guardrail | `contracts/`, `fixtures/`, `api/` (incl. `api/chat/`), `db/`, `docker-compose.yml`, `requirements.txt`, `AGENTS.md`, `CLAUDE.md` |
+| **Backend 1** | Lead, integrator, API + chat guardrail | `contracts/`, `fixtures/`, `api/` (incl. `api/chat/`), `db/`, `docker-compose.yml`, `requirements.in`, `requirements.txt`, `AGENTS.md`, `CLAUDE.md` |
 | **Backend 2** | Profiler agent | `agents/profiler/` |
 | **Backend 3** | Monitors + matcher | `agents/monitors/`, `agents/matcher/` |
 | **UI 1** | Profile and findings UI | `ui/profile/`, `ui/dashboard/`, `ui/app.py` (Streamlit entry point) |
@@ -50,7 +50,7 @@ Fill in names here: Backend 1 ____ · Backend 2 ____ · Backend 3 ____ · UI 1 _
 Rules:
 - **Never edit a file outside your role's folders.** If a change is needed elsewhere, write down what's needed and stop, so the human can ask the owner.
 - **Never change `contracts/`** unless you are Backend 1. Schema changes are requested in the team chat, and Backend 1 decides within 15 minutes.
-- New dependencies: tell Backend 1, who adds them to `requirements.txt`.
+- New dependencies: tell Backend 1, who adds them to `requirements.in` and regenerates `requirements.txt`.
 - UI 2 needs a page in the Streamlit app: UI 1 adds the link in `ui/app.py`, and UI 2 only writes the code under `ui/chat/`.
 - Tests live inside the owner's folder (e.g. `agents/profiler/tests/`).
 - Shared helpers: don't create a shared `utils/` folder. Duplicate a small helper rather than editing someone else's code.
@@ -155,7 +155,8 @@ The canonical files are in `contracts/`. The summaries below are for orientation
 - **Checkpoints:** at **19:00**, one company runs end to end. If it doesn't, everyone stops adding features and helps integrate. At **07:30**, all branches are merged and the tools are wired to real data.
 - Before pushing, run `pytest` for your folder and make sure it passes. Never delete, skip or weaken tests to get a green build.
 - Use Conventional Commits (`feat(profiler): …`). Keep any AI co-author trailers.
-- Don't add a dependency without telling Backend 1 (name and reason); Backend 1 pins it in `requirements.txt`.
+- Don't add a dependency without telling Backend 1 (name and reason). Backend 1 pins it in `requirements.in` and regenerates the hash-locked `requirements.txt` with the command in the header of `requirements.in`. Never edit `requirements.txt` by hand: the Docker build installs with `--require-hashes` and fails on any unhashed line.
+- Keep the Dockerfile hardened (SonarCloud checks it): `COPY` named source folders only, never `COPY . .`; run as the non-root `app` user; keep `pip install --only-binary :all: --require-hashes`.
 - Spend about a third of your time reviewing what your assistant produced.
 
 **Cut order if time runs short** (each cut becomes a "next step" in the pitch):
