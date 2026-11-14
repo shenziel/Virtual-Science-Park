@@ -1,4 +1,5 @@
 [
   {"company_id": "softhouse", "name": "Softhouse", "website": "https://www.softhouse.se"},
-  {"company_id": "cleura", "name": "Cleura", "website": "https://cleura.com"}
+  {"company_id": "cleura", "name": "Cleura", "website": "https://cleura.com"},
+  {"company_id": "ocean-harvesting", "name": "Ocean Harvesting Technologies AB", "website": "https://oceanharvesting.com"}
 ]
