@@ -158,13 +158,19 @@ class VinnovaFundingMonitor(BaseMonitor):
                 if "/api/" in parsed.path.lower() or "ansök" in label or "ansok" in label or "apply" in label:
                     continue
 
-                # Prefer Vinnova's human-readable information page; otherwise
-                # use a source-supplied call page such as the programme owner.
+                # Prefer call-specific source pages, then Vinnova's readable
+                # information page, over generic homepages.
                 score = 0
+                path_and_label = f"{parsed.path} {label}".lower()
+                if any(
+                    word in path_and_label
+                    for word in ("call", "calls", "utlysning", "utlysningar", "funding")
+                ):
+                    score += 20
                 if host == "www.vinnova.se" or host == "vinnova.se":
-                    score += 10
-                if any(word in label for word in ("webbplats", "website", "call", "utlysning")):
-                    score += 2
+                    score += 8
+                if any(word in label for word in ("webbplats", "website")):
+                    score += 1
                 candidates.append((score, url))
 
         if not candidates:
