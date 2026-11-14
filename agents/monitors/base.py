@@ -183,7 +183,7 @@ class BaseMonitor:
                 return response.read().decode("utf-8")
         except (urllib.error.URLError, TimeoutError, OSError) as exc:
             logger.warning(
-                "Network fetch from %s (%s) failed (%s); falling back to snapshot.",
+                "Live network fetch from %s (%s) failed (%s).",
                 self.source,
                 url,
                 exc,

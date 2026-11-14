@@ -9,17 +9,18 @@
 
 Per AGENTS.md §5:
 1. **Funding Source:** Vinnova open calls (`VinnovaFundingMonitor`)
-2. **Events Source:** Blue Science Park events and webinars (`BSPEventsMonitor`)
+2. **Events Source:** Blue Science Park's public WordPress event collection (`BSPEventsMonitor`)
 
 ---
 
 ## Contract Compliance & Guarantees
 
 - **No Inventions:** Every opportunity requires a live `url` (`http://` or `https://`) and at least one real date (`published`, `deadline`, or `event_date`). Items missing either are dropped immediately.
-- **Offline Behavior:** Blue Science Park events can use a dated, labelled cached snapshot. Vinnova funding returns no items if the live API is unavailable; there is no fabricated funding snapshot.
-- **Badging / Labelling:** Cached event items explicitly set `cached_snapshot=True`. Vinnova results always come from live API responses and set `cached_snapshot=False`.
-- **Vinnova API:** Reads calls and application rounds from the documented `data.vinnova.se` endpoints, joins them by case number, and emits only public rounds with a future closing date. `VINNOVA_UPDATED_SINCE` can override the default two-year lookback date.
-- **Environment names:** Source settings use `MONITOR_REQUEST_TIMEOUT`, `VINNOVA_API_URL`, `VINNOVA_UPDATED_SINCE`, and `BSP_EVENTS_FEED_URL`, matching `.env.example`. `MONITOR_BASE_URL`, `MONITOR_MODEL`, and `MONITOR_API_KEY` are also read there for consistency, but this deterministic monitor currently makes no LLM calls.
+- **Offline Behavior:** Neither source falls back to the old unverified snapshots. If a live source is unavailable, it returns no opportunities.
+- **Badging / Labelling:** Live Vinnova and Blue Science Park records set `is_simulated=False` and `cached_snapshot=False`.
+- **Vinnova API:** Joins public calls and application rounds by case number, emits only public rounds with a future closing date, and uses a human-facing URL from Vinnova's `LankLista`. Records without a public call page are dropped instead of linking to the JSON API or an application form. `VINNOVA_UPDATED_SINCE` overrides the default two-year lookback date.
+- **Blue Science Park API:** Reads the public `/wp-json/wp/v2/event` collection. It emits only events with an explicitly year-qualified future date in the event content, and uses the record's canonical event page URL. It does not infer a year from the publication date.
+- **Environment names:** Source settings use `MONITOR_REQUEST_TIMEOUT` (default 35 seconds), `VINNOVA_API_URL`, `VINNOVA_UPDATED_SINCE`, and `BSP_EVENTS_FEED_URL`. The latter now defaults to the public WordPress API endpoint. `MONITOR_BASE_URL`, `MONITOR_MODEL`, and `MONITOR_API_KEY` are also read for consistency, but these deterministic monitors make no LLM calls.
 - **Identifying User-Agent:** All HTTP requests send:
   `VirtualScienceParkBot/1.0 (+https://www.bluesciencepark.se; contact@bluesciencepark.se)`
 - **Validation:** Every item returned by `fetch_all_opportunities()` validates against `contracts.models.Opportunity`.
@@ -35,7 +36,7 @@ agents/monitors/
 ├── config.py             # URLs, timeout, user agent, snapshot paths
 ├── vinnova.py            # VinnovaFundingMonitor
 ├── bsp_events.py         # BSPEventsMonitor
-├── snapshots/            # Dated, labelled cached snapshots for offline demo
+├── snapshots/            # Empty until a source snapshot is verified and labelled
 │   ├── vinnova_calls.json
 │   └── bsp_events.json
 ├── tests/

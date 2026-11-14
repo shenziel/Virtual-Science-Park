@@ -17,7 +17,7 @@ BSP_EVENTS_SNAPSHOT_PATH = SNAPSHOTS_DIR / "bsp_events.json"
 USER_AGENT = "VirtualScienceParkBot/1.0 (+https://www.bluesciencepark.se; contact@bluesciencepark.se)"
 
 # Network request timeout in seconds
-REQUEST_TIMEOUT_SECONDS = int(os.getenv("MONITOR_REQUEST_TIMEOUT", "10"))
+REQUEST_TIMEOUT_SECONDS = int(os.getenv("MONITOR_REQUEST_TIMEOUT", "35"))
 
 # Model settings follow the root .env.example naming convention. The current
 # source monitor is deterministic and does not make LLM calls.
@@ -43,5 +43,5 @@ VINNOVA_UPDATED_SINCE = os.getenv(
 )
 BSP_EVENTS_FEED_URL = os.getenv(
     "BSP_EVENTS_FEED_URL",
-    "https://www.bluesciencepark.se/evenemang/feed/",
+    "https://www.bluesciencepark.se/wp-json/wp/v2/event?per_page=100&_fields=date,link,title,content,excerpt",
 )

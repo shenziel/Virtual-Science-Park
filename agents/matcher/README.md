@@ -66,7 +66,7 @@ pytest agents/matcher/tests/ -v
 |---|---|---|
 | `pydantic` | ≥2.0 | Schema validation of all contracts |
 | `pytest` | ≥7.0 | Test runner |
-| `openai` | ≥1.0 | Optional: LLM `why` generation (skipped gracefully if absent) |
+| `httpx` | 0.28.1 | Optional: direct OpenAI-compatible HTTP request for LLM `why` generation |
 
 ---
 
@@ -74,9 +74,10 @@ pytest agents/matcher/tests/ -v
 
 | Variable | Required | Description |
 |---|---|---|
-| `MATCHER_MODEL` | No | Model name (default: `gpt-4o-mini`) |
+| `MATCHER_MODEL` | No | Model name (default: `openai/gpt-4o-mini`) |
 | `MATCHER_API_KEY` | No | API key; if unset, deterministic `why` is used |
-| `MATCHER_BASE_URL` | No | Override base URL (e.g. for Ollama: `http://ollama:11434/v1`) |
+| `MATCHER_BASE_URL` | No | Base URL (default: `https://openrouter.ai/api/v1`; Ollama example: `http://ollama:11434/v1`) |
+| Request timeout | — | Fixed at 5 seconds so claim edits fall back quickly if the provider is slow |
 
 ---
 
