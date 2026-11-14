@@ -1,0 +1,930 @@
+{
+  "version": "1.0.0",
+  "project": {
+    "name": "Virtual Science Park agents",
+    "languages": [],
+    "frameworks": [],
+    "description": "Agent subsystems for profiling companies, monitoring opportunities, and matching recommendations.",
+    "analyzedAt": "2026-11-14T10:47:52.048090+00:00",
+    "gitCommitHash": "9479593c2315e996a6b3e9636a9bb5eb9d27527b"
+  },
+  "nodes": [
+    {
+      "id": "file:matcher/README.md",
+      "type": "document",
+      "name": "matcher README",
+      "filePath": "matcher/README.md",
+      "summary": "Documents matcher scoring, ranking, configuration, tests, and contract compliance.",
+      "tags": [
+        "documentation",
+        "matcher"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:matcher/__init__.py",
+      "type": "file",
+      "name": "matcher package initializer",
+      "filePath": "matcher/__init__.py",
+      "summary": "Exposes match and shared contract types from the matcher package.",
+      "tags": [
+        "python",
+        "package"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:matcher/config.py",
+      "type": "file",
+      "name": "matcher configuration",
+      "filePath": "matcher/config.py",
+      "summary": "Defines scoring weights, thresholds, timeline parameters, and optional LLM settings.",
+      "tags": [
+        "python",
+        "configuration"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:matcher/matcher.py",
+      "type": "file",
+      "name": "matcher engine",
+      "filePath": "matcher/matcher.py",
+      "summary": "Scores opportunities against profiles and produces ranked recommendations.",
+      "tags": [
+        "python",
+        "matching",
+        "scoring",
+        "tested"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:matcher/prompts/why_v1.md",
+      "type": "document",
+      "name": "why generation prompt",
+      "filePath": "matcher/prompts/why_v1.md",
+      "summary": "Constrains one-sentence LLM explanations for opportunity matches.",
+      "tags": [
+        "prompt",
+        "llm"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:matcher/tests/__init__.py",
+      "type": "file",
+      "name": "matcher tests package",
+      "filePath": "matcher/tests/__init__.py",
+      "summary": "Initializes the matcher test package.",
+      "tags": [
+        "python",
+        "tests"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:matcher/tests/test_matcher.py",
+      "type": "file",
+      "name": "matcher test suite",
+      "filePath": "matcher/tests/test_matcher.py",
+      "summary": "Tests matcher scoring dimensions, ranking, validation, and deterministic explanations.",
+      "tags": [
+        "python",
+        "tests",
+        "matcher"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:monitors/README.md",
+      "type": "document",
+      "name": "monitors README",
+      "filePath": "monitors/README.md",
+      "summary": "Documents public opportunity monitors, validation guarantees, and offline snapshots.",
+      "tags": [
+        "documentation",
+        "monitors"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:monitors/__init__.py",
+      "type": "file",
+      "name": "monitors package initializer",
+      "filePath": "monitors/__init__.py",
+      "summary": "Aggregates funding and event monitors into a deduplicated opportunity list.",
+      "tags": [
+        "python",
+        "package",
+        "aggregation",
+        "tested"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:monitors/base.py",
+      "type": "file",
+      "name": "monitor base utilities",
+      "filePath": "monitors/base.py",
+      "summary": "Provides sanitization, date parsing, snapshot loading, and HTTP fallback behavior.",
+      "tags": [
+        "python",
+        "validation",
+        "network",
+        "tested"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:monitors/bsp_events.py",
+      "type": "file",
+      "name": "Blue Science Park events monitor",
+      "filePath": "monitors/bsp_events.py",
+      "summary": "Parses and fetches Blue Science Park event feeds with snapshot fallback.",
+      "tags": [
+        "python",
+        "events",
+        "monitor",
+        "tested"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:monitors/config.py",
+      "type": "file",
+      "name": "monitor configuration",
+      "filePath": "monitors/config.py",
+      "summary": "Defines public endpoints, timeout, user agent, and snapshot paths.",
+      "tags": [
+        "python",
+        "configuration"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "config:monitors/snapshots/bsp_events.json",
+      "type": "config",
+      "name": "BSP events snapshot",
+      "filePath": "monitors/snapshots/bsp_events.json",
+      "summary": "Cached Blue Science Park event opportunities for offline operation.",
+      "tags": [
+        "json",
+        "snapshot",
+        "events"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "config:monitors/snapshots/vinnova_calls.json",
+      "type": "config",
+      "name": "Vinnova calls snapshot",
+      "filePath": "monitors/snapshots/vinnova_calls.json",
+      "summary": "Cached Vinnova funding opportunities for offline operation.",
+      "tags": [
+        "json",
+        "snapshot",
+        "funding"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:monitors/tests/__init__.py",
+      "type": "file",
+      "name": "monitor tests package",
+      "filePath": "monitors/tests/__init__.py",
+      "summary": "Initializes the monitor test package.",
+      "tags": [
+        "python",
+        "tests"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:monitors/tests/test_monitors.py",
+      "type": "file",
+      "name": "monitor test suite",
+      "filePath": "monitors/tests/test_monitors.py",
+      "summary": "Tests sanitization, feed parsing, snapshots, and aggregate monitor behavior.",
+      "tags": [
+        "python",
+        "tests",
+        "monitors"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:monitors/vinnova.py",
+      "type": "file",
+      "name": "Vinnova funding monitor",
+      "filePath": "monitors/vinnova.py",
+      "summary": "Parses Vinnova funding responses and falls back to cached calls.",
+      "tags": [
+        "python",
+        "funding",
+        "monitor",
+        "tested"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:profiler/models.py",
+      "type": "file",
+      "name": "profiler data models",
+      "filePath": "profiler/models.py",
+      "summary": "Defines validated Claim and CompanyProfile Pydantic models.",
+      "tags": [
+        "python",
+        "models",
+        "validation",
+        "tested"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:profiler/profiler.py",
+      "type": "file",
+      "name": "company profiler",
+      "filePath": "profiler/profiler.py",
+      "summary": "Fetches company websites, extracts profile claims, fills required fields, and caches profiles.",
+      "tags": [
+        "python",
+        "profiling",
+        "cache",
+        "tested"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:profiler/prompts/extract_claims.md",
+      "type": "document",
+      "name": "claim extraction prompt",
+      "filePath": "profiler/prompts/extract_claims.md",
+      "summary": "Specifies six profile areas and evidence rules for claim extraction.",
+      "tags": [
+        "prompt",
+        "profiling"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:profiler/tests/test_profiler.py",
+      "type": "file",
+      "name": "profiler test suite",
+      "filePath": "profiler/tests/test_profiler.py",
+      "summary": "Tests claim and profile validation plus missing-field fallback behavior.",
+      "tags": [
+        "python",
+        "tests",
+        "profiler"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:matcher/matcher.py:_topic_overlap_score",
+      "type": "function",
+      "name": "_topic_overlap_score",
+      "filePath": "matcher/matcher.py",
+      "summary": "Computes weighted topic overlap and returns matched claims.",
+      "tags": [
+        "scoring",
+        "helper"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:matcher/matcher.py:_timeline_score",
+      "type": "function",
+      "name": "_timeline_score",
+      "filePath": "matcher/matcher.py",
+      "summary": "Scores opportunity urgency from deadline, event, or publication dates.",
+      "tags": [
+        "scoring",
+        "helper"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:matcher/matcher.py:_location_format_score",
+      "type": "function",
+      "name": "_location_format_score",
+      "filePath": "matcher/matcher.py",
+      "summary": "Scores online accessibility or geographic fit for in-person opportunities.",
+      "tags": [
+        "scoring",
+        "helper"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:matcher/matcher.py:_build_why_deterministic",
+      "type": "function",
+      "name": "_build_why_deterministic",
+      "filePath": "matcher/matcher.py",
+      "summary": "Builds a deterministic explanation from matched claims.",
+      "tags": [
+        "explanation",
+        "fallback"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:matcher/matcher.py:_build_why_llm",
+      "type": "function",
+      "name": "_build_why_llm",
+      "filePath": "matcher/matcher.py",
+      "summary": "Uses the optional OpenAI client and prompt file to generate match explanations.",
+      "tags": [
+        "explanation",
+        "llm"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:matcher/matcher.py:_build_why",
+      "type": "function",
+      "name": "_build_why",
+      "filePath": "matcher/matcher.py",
+      "summary": "Selects LLM or deterministic explanation generation.",
+      "tags": [
+        "explanation"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:matcher/matcher.py:match",
+      "type": "function",
+      "name": "match",
+      "filePath": "matcher/matcher.py",
+      "summary": "Ranks opportunities and returns thresholded Recommendation objects.",
+      "tags": [
+        "public-api",
+        "matching"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "class:monitors/base.py:BaseMonitor",
+      "type": "class",
+      "name": "BaseMonitor",
+      "filePath": "monitors/base.py",
+      "summary": "Base implementation for loading snapshots and fetching monitor URLs.",
+      "tags": [
+        "monitor",
+        "base-class"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "class:monitors/bsp_events.py:BSPEventsMonitor",
+      "type": "class",
+      "name": "BSPEventsMonitor",
+      "filePath": "monitors/bsp_events.py",
+      "summary": "Monitor for Blue Science Park events and RSS or JSON feeds.",
+      "tags": [
+        "monitor",
+        "events"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "class:monitors/vinnova.py:VinnovaFundingMonitor",
+      "type": "class",
+      "name": "VinnovaFundingMonitor",
+      "filePath": "monitors/vinnova.py",
+      "summary": "Monitor for Vinnova funding calls and grants.",
+      "tags": [
+        "monitor",
+        "funding"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "class:profiler/models.py:Claim",
+      "type": "class",
+      "name": "Claim",
+      "filePath": "profiler/models.py",
+      "summary": "Validated profile assertion with evidence and confidence.",
+      "tags": [
+        "model",
+        "pydantic"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "class:profiler/models.py:CompanyProfile",
+      "type": "class",
+      "name": "CompanyProfile",
+      "filePath": "profiler/models.py",
+      "summary": "Validated company identity and collection of profile claims.",
+      "tags": [
+        "model",
+        "pydantic"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "class:profiler/profiler.py:ProfilerAgent",
+      "type": "class",
+      "name": "ProfilerAgent",
+      "filePath": "profiler/profiler.py",
+      "summary": "Coordinates website retrieval, claim extraction, required-field completion, and profile caching.",
+      "tags": [
+        "agent",
+        "profiling"
+      ],
+      "complexity": "moderate"
+    }
+  ],
+  "edges": [
+    {
+      "source": "file:matcher/__init__.py",
+      "target": "file:matcher/matcher.py",
+      "type": "imports",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:matcher/matcher.py",
+      "target": "file:matcher/config.py",
+      "type": "imports",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "function:matcher/matcher.py:match",
+      "target": "function:matcher/matcher.py:_topic_overlap_score",
+      "type": "calls",
+      "weight": 0.8,
+      "direction": "forward"
+    },
+    {
+      "source": "function:matcher/matcher.py:match",
+      "target": "function:matcher/matcher.py:_timeline_score",
+      "type": "calls",
+      "weight": 0.8,
+      "direction": "forward"
+    },
+    {
+      "source": "function:matcher/matcher.py:match",
+      "target": "function:matcher/matcher.py:_location_format_score",
+      "type": "calls",
+      "weight": 0.8,
+      "direction": "forward"
+    },
+    {
+      "source": "function:matcher/matcher.py:match",
+      "target": "function:matcher/matcher.py:_build_why",
+      "type": "calls",
+      "weight": 0.8,
+      "direction": "forward"
+    },
+    {
+      "source": "function:matcher/matcher.py:_build_why",
+      "target": "function:matcher/matcher.py:_build_why_llm",
+      "type": "calls",
+      "weight": 0.8,
+      "direction": "forward"
+    },
+    {
+      "source": "function:matcher/matcher.py:_build_why",
+      "target": "function:matcher/matcher.py:_build_why_deterministic",
+      "type": "calls",
+      "weight": 0.8,
+      "direction": "forward"
+    },
+    {
+      "source": "function:matcher/matcher.py:_build_why_llm",
+      "target": "file:matcher/prompts/why_v1.md",
+      "type": "depends_on",
+      "weight": 0.6,
+      "direction": "forward"
+    },
+    {
+      "source": "file:matcher/matcher.py",
+      "target": "function:matcher/matcher.py:_topic_overlap_score",
+      "type": "contains",
+      "weight": 1.0,
+      "direction": "forward"
+    },
+    {
+      "source": "file:matcher/matcher.py",
+      "target": "function:matcher/matcher.py:_timeline_score",
+      "type": "contains",
+      "weight": 1.0,
+      "direction": "forward"
+    },
+    {
+      "source": "file:matcher/matcher.py",
+      "target": "function:matcher/matcher.py:_location_format_score",
+      "type": "contains",
+      "weight": 1.0,
+      "direction": "forward"
+    },
+    {
+      "source": "file:matcher/matcher.py",
+      "target": "function:matcher/matcher.py:_build_why_deterministic",
+      "type": "contains",
+      "weight": 1.0,
+      "direction": "forward"
+    },
+    {
+      "source": "file:matcher/matcher.py",
+      "target": "function:matcher/matcher.py:_build_why_llm",
+      "type": "contains",
+      "weight": 1.0,
+      "direction": "forward"
+    },
+    {
+      "source": "file:matcher/matcher.py",
+      "target": "function:matcher/matcher.py:_build_why",
+      "type": "contains",
+      "weight": 1.0,
+      "direction": "forward"
+    },
+    {
+      "source": "file:matcher/matcher.py",
+      "target": "function:matcher/matcher.py:match",
+      "type": "contains",
+      "weight": 1.0,
+      "direction": "forward"
+    },
+    {
+      "source": "file:monitors/__init__.py",
+      "target": "file:monitors/vinnova.py",
+      "type": "imports",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:monitors/__init__.py",
+      "target": "file:monitors/bsp_events.py",
+      "type": "imports",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:monitors/bsp_events.py",
+      "target": "file:monitors/base.py",
+      "type": "imports",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:monitors/bsp_events.py",
+      "target": "file:monitors/config.py",
+      "type": "imports",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:monitors/vinnova.py",
+      "target": "file:monitors/base.py",
+      "type": "imports",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:monitors/vinnova.py",
+      "target": "file:monitors/config.py",
+      "type": "imports",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:monitors/base.py",
+      "target": "file:monitors/config.py",
+      "type": "imports",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:monitors/bsp_events.py",
+      "target": "config:monitors/snapshots/bsp_events.json",
+      "type": "depends_on",
+      "weight": 0.6,
+      "direction": "forward"
+    },
+    {
+      "source": "file:monitors/vinnova.py",
+      "target": "config:monitors/snapshots/vinnova_calls.json",
+      "type": "depends_on",
+      "weight": 0.6,
+      "direction": "forward"
+    },
+    {
+      "source": "file:monitors/base.py",
+      "target": "class:monitors/base.py:BaseMonitor",
+      "type": "contains",
+      "weight": 1.0,
+      "direction": "forward"
+    },
+    {
+      "source": "file:monitors/bsp_events.py",
+      "target": "class:monitors/bsp_events.py:BSPEventsMonitor",
+      "type": "contains",
+      "weight": 1.0,
+      "direction": "forward"
+    },
+    {
+      "source": "file:monitors/vinnova.py",
+      "target": "class:monitors/vinnova.py:VinnovaFundingMonitor",
+      "type": "contains",
+      "weight": 1.0,
+      "direction": "forward"
+    },
+    {
+      "source": "class:monitors/bsp_events.py:BSPEventsMonitor",
+      "target": "class:monitors/base.py:BaseMonitor",
+      "type": "inherits",
+      "weight": 0.9,
+      "direction": "forward"
+    },
+    {
+      "source": "class:monitors/vinnova.py:VinnovaFundingMonitor",
+      "target": "class:monitors/base.py:BaseMonitor",
+      "type": "inherits",
+      "weight": 0.9,
+      "direction": "forward"
+    },
+    {
+      "source": "file:profiler/profiler.py",
+      "target": "file:profiler/models.py",
+      "type": "imports",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:profiler/profiler.py",
+      "target": "file:profiler/prompts/extract_claims.md",
+      "type": "depends_on",
+      "weight": 0.6,
+      "direction": "forward"
+    },
+    {
+      "source": "file:profiler/profiler.py",
+      "target": "class:profiler/profiler.py:ProfilerAgent",
+      "type": "contains",
+      "weight": 1.0,
+      "direction": "forward"
+    },
+    {
+      "source": "file:profiler/models.py",
+      "target": "class:profiler/models.py:Claim",
+      "type": "contains",
+      "weight": 1.0,
+      "direction": "forward"
+    },
+    {
+      "source": "file:profiler/models.py",
+      "target": "class:profiler/models.py:CompanyProfile",
+      "type": "contains",
+      "weight": 1.0,
+      "direction": "forward"
+    },
+    {
+      "source": "file:profiler/tests/test_profiler.py",
+      "target": "file:profiler/profiler.py",
+      "type": "imports",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:profiler/tests/test_profiler.py",
+      "target": "file:profiler/models.py",
+      "type": "imports",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:matcher/tests/test_matcher.py",
+      "target": "file:matcher/matcher.py",
+      "type": "imports",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:matcher/tests/test_matcher.py",
+      "target": "file:matcher/config.py",
+      "type": "imports",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:monitors/tests/test_monitors.py",
+      "target": "file:monitors/base.py",
+      "type": "imports",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:monitors/tests/test_monitors.py",
+      "target": "file:monitors/vinnova.py",
+      "type": "imports",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:monitors/tests/test_monitors.py",
+      "target": "file:monitors/bsp_events.py",
+      "type": "imports",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:monitors/tests/test_monitors.py",
+      "target": "file:monitors/__init__.py",
+      "type": "imports",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:matcher/matcher.py",
+      "target": "file:matcher/tests/test_matcher.py",
+      "type": "tested_by",
+      "weight": 0.5,
+      "direction": "forward"
+    },
+    {
+      "source": "file:monitors/base.py",
+      "target": "file:monitors/tests/test_monitors.py",
+      "type": "tested_by",
+      "weight": 0.5,
+      "direction": "forward"
+    },
+    {
+      "source": "file:monitors/vinnova.py",
+      "target": "file:monitors/tests/test_monitors.py",
+      "type": "tested_by",
+      "weight": 0.5,
+      "direction": "forward"
+    },
+    {
+      "source": "file:monitors/bsp_events.py",
+      "target": "file:monitors/tests/test_monitors.py",
+      "type": "tested_by",
+      "weight": 0.5,
+      "direction": "forward"
+    },
+    {
+      "source": "file:monitors/__init__.py",
+      "target": "file:monitors/tests/test_monitors.py",
+      "type": "tested_by",
+      "weight": 0.5,
+      "direction": "forward"
+    },
+    {
+      "source": "file:profiler/models.py",
+      "target": "file:profiler/tests/test_profiler.py",
+      "type": "tested_by",
+      "weight": 0.5,
+      "direction": "forward"
+    },
+    {
+      "source": "file:profiler/profiler.py",
+      "target": "file:profiler/tests/test_profiler.py",
+      "type": "tested_by",
+      "weight": 0.5,
+      "direction": "forward"
+    }
+  ],
+  "layers": [
+    {
+      "id": "shared-agent-code",
+      "name": "Shared and agent code",
+      "description": "Package entry points and shared orchestration-facing code that expose subsystem APIs.",
+      "nodeIds": [
+        "file:matcher/__init__.py",
+        "file:monitors/__init__.py"
+      ]
+    },
+    {
+      "id": "matcher",
+      "name": "Matcher",
+      "description": "Opportunity scoring, ranking, explanation generation, configuration, prompt, and matcher tests.",
+      "nodeIds": [
+        "file:matcher/README.md",
+        "file:matcher/config.py",
+        "file:matcher/matcher.py",
+        "file:matcher/prompts/why_v1.md",
+        "function:matcher/matcher.py:_topic_overlap_score",
+        "function:matcher/matcher.py:_timeline_score",
+        "function:matcher/matcher.py:_location_format_score",
+        "function:matcher/matcher.py:_build_why_deterministic",
+        "function:matcher/matcher.py:_build_why_llm",
+        "function:matcher/matcher.py:_build_why",
+        "function:matcher/matcher.py:match",
+        "file:matcher/tests/__init__.py",
+        "file:matcher/tests/test_matcher.py"
+      ]
+    },
+    {
+      "id": "monitors",
+      "name": "Monitors",
+      "description": "Public opportunity ingestion, validation, aggregation, configuration, snapshots, and monitor tests.",
+      "nodeIds": [
+        "file:monitors/README.md",
+        "file:monitors/base.py",
+        "file:monitors/bsp_events.py",
+        "file:monitors/config.py",
+        "file:monitors/vinnova.py",
+        "config:monitors/snapshots/bsp_events.json",
+        "config:monitors/snapshots/vinnova_calls.json",
+        "class:monitors/base.py:BaseMonitor",
+        "class:monitors/bsp_events.py:BSPEventsMonitor",
+        "class:monitors/vinnova.py:VinnovaFundingMonitor",
+        "file:monitors/tests/__init__.py",
+        "file:monitors/tests/test_monitors.py"
+      ]
+    },
+    {
+      "id": "profiler",
+      "name": "Profiler",
+      "description": "Company profile models, website-to-claim extraction agent, prompt, caching behavior, and profiler tests.",
+      "nodeIds": [
+        "file:profiler/models.py",
+        "file:profiler/profiler.py",
+        "file:profiler/prompts/extract_claims.md",
+        "file:profiler/tests/test_profiler.py",
+        "class:profiler/models.py:Claim",
+        "class:profiler/models.py:CompanyProfile",
+        "class:profiler/profiler.py:ProfilerAgent"
+      ]
+    }
+  ],
+  "tour": [
+    {
+      "order": 1,
+      "title": "Package and subsystem orientation",
+      "description": "Start with package entry points and README files to see how monitors, profiler, and matcher fit together as agent-facing subsystems.",
+      "nodeIds": [
+        "file:monitors/__init__.py",
+        "file:matcher/__init__.py",
+        "file:monitors/README.md",
+        "file:matcher/README.md"
+      ]
+    },
+    {
+      "order": 2,
+      "title": "Monitors: collect opportunities",
+      "description": "Follow BaseMonitor through the Vinnova funding and Blue Science Park event monitors, including configuration and offline snapshots.",
+      "nodeIds": [
+        "file:monitors/base.py",
+        "class:monitors/base.py:BaseMonitor",
+        "file:monitors/vinnova.py",
+        "class:monitors/vinnova.py:VinnovaFundingMonitor",
+        "file:monitors/bsp_events.py",
+        "class:monitors/bsp_events.py:BSPEventsMonitor",
+        "file:monitors/config.py",
+        "config:monitors/snapshots/vinnova_calls.json",
+        "config:monitors/snapshots/bsp_events.json"
+      ]
+    },
+    {
+      "order": 3,
+      "title": "Profiler: build company profiles",
+      "description": "Examine how ProfilerAgent retrieves sites, extracts evidence-backed claims, fills required fields, and caches validated CompanyProfile data.",
+      "nodeIds": [
+        "file:profiler/profiler.py",
+        "class:profiler/profiler.py:ProfilerAgent",
+        "file:profiler/models.py",
+        "class:profiler/models.py:Claim",
+        "class:profiler/models.py:CompanyProfile",
+        "file:profiler/prompts/extract_claims.md"
+      ]
+    },
+    {
+      "order": 4,
+      "title": "Matcher: score and explain recommendations",
+      "description": "Trace match from topic, timeline, and location scoring through thresholded ranking and deterministic or optional LLM explanations.",
+      "nodeIds": [
+        "file:matcher/matcher.py",
+        "function:matcher/matcher.py:match",
+        "function:matcher/matcher.py:_topic_overlap_score",
+        "function:matcher/matcher.py:_timeline_score",
+        "function:matcher/matcher.py:_location_format_score",
+        "function:matcher/matcher.py:_build_why",
+        "function:matcher/matcher.py:_build_why_deterministic",
+        "function:matcher/matcher.py:_build_why_llm",
+        "file:matcher/config.py",
+        "file:matcher/prompts/why_v1.md"
+      ]
+    },
+    {
+      "order": 5,
+      "title": "Verification through tests",
+      "description": "Finish with subsystem tests and tested_by links covering monitor parsing and snapshots, profiler validation and fallbacks, and matcher scoring, ranking, and explanations.",
+      "nodeIds": [
+        "file:monitors/tests/test_monitors.py",
+        "file:matcher/tests/test_matcher.py",
+        "file:profiler/tests/test_profiler.py",
+        "file:monitors/base.py",
+        "file:monitors/vinnova.py",
+        "file:monitors/bsp_events.py",
+        "file:matcher/matcher.py",
+        "file:profiler/models.py",
+        "file:profiler/profiler.py"
+      ]
+    }
+  ]
+}

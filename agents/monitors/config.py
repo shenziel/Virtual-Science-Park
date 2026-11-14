@@ -5,6 +5,7 @@ Owner: Backend 3 (agents/monitors/)
 from __future__ import annotations
 
 import os
+from datetime import date, timedelta
 from pathlib import Path
 
 # Base directory for cached snapshots
@@ -18,10 +19,27 @@ USER_AGENT = "VirtualScienceParkBot/1.0 (+https://www.bluesciencepark.se; contac
 # Network request timeout in seconds
 REQUEST_TIMEOUT_SECONDS = int(os.getenv("MONITOR_REQUEST_TIMEOUT", "10"))
 
+# Model settings follow the root .env.example naming convention. The current
+# source monitor is deterministic and does not make LLM calls.
+MONITOR_BASE_URL: str | None = os.getenv("MONITOR_BASE_URL")
+MONITOR_MODEL: str = os.getenv("MONITOR_MODEL", "")
+MONITOR_API_KEY: str | None = os.getenv("MONITOR_API_KEY")
+
 # Default public source endpoints
 VINNOVA_API_URL = os.getenv(
     "VINNOVA_API_URL",
     "https://data.vinnova.se/api/utlysningar",
+).rstrip("/")
+VINNOVA_ROUNDS_API_URL = os.getenv(
+    "VINNOVA_ROUNDS_API_URL",
+    f"{VINNOVA_API_URL.removesuffix('/utlysningar')}/ansokningsomgangar",
+).rstrip("/")
+# The legacy open-data API accepts an "updated since" date as the final path
+# segment. A two-year window keeps the request bounded while including recently
+# changed calls and application rounds.
+VINNOVA_UPDATED_SINCE = os.getenv(
+    "VINNOVA_UPDATED_SINCE",
+    (date.today() - timedelta(days=730)).isoformat(),
 )
 BSP_EVENTS_FEED_URL = os.getenv(
     "BSP_EVENTS_FEED_URL",

@@ -137,19 +137,13 @@ class TestVinnovaFundingMonitor:
         assert "circular economy" in opp.topics
         Opportunity.model_validate(opp.model_dump())
 
-    def test_fallback_to_snapshot(self):
+    def test_no_mock_funding_when_live_data_is_not_requested(self):
         from agents.monitors.vinnova import VinnovaFundingMonitor
 
         monitor = VinnovaFundingMonitor()
-        # Loading snapshot must succeed even when offline
+        # Funding has no fabricated offline snapshot.
         opportunities = monitor.load_cached_snapshot()
-        assert len(opportunities) > 0
-        for opp in opportunities:
-            assert opp.type == OpportunityType.funding
-            assert opp.cached_snapshot is True
-            assert opp.url.startswith("http")
-            assert opp.deadline or opp.published or opp.event_date
-            Opportunity.model_validate(opp.model_dump())
+        assert opportunities == []
 
 
 class TestBSPEventsMonitor:
@@ -209,16 +203,16 @@ class TestBSPEventsMonitor:
 class TestFetchAllOpportunities:
     """Checks end-to-end integration of all monitors."""
 
-    def test_fetch_all_returns_both_funding_and_events(self):
+    def test_cached_fetch_returns_events_without_mock_funding(self):
         from agents.monitors import fetch_all_opportunities
 
-        # In offline/test sandbox, fetch_all_opportunities gracefully uses cached snapshots
+        # The event source may use its labelled snapshot; Vinnova must not.
         opportunities = fetch_all_opportunities(force_cache=True)
         assert len(opportunities) >= 2
 
         types = {opp.type for opp in opportunities}
-        assert OpportunityType.funding in types, "Must contain funding opportunities"
         assert OpportunityType.event in types, "Must contain event opportunities"
+        assert OpportunityType.funding not in types, "Must not include fabricated cached funding"
 
         for opp in opportunities:
             # Must strictly validate against contract schema

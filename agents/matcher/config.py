@@ -35,10 +35,10 @@ USER_CONFIRMED_BOOST: float = 1.5
 MIN_SCORE_THRESHOLD: float = 0.05
 
 # ---------------------------------------------------------------------------
-# LLM settings (read from env at runtime — never hard-code)
+# Matcher LLM settings (names match the root .env.example).
 # ---------------------------------------------------------------------------
 import os
 
-LLM_MODEL: str = os.getenv("LLM_MODEL", "gpt-4o-mini")
-LLM_API_KEY: str | None = os.getenv("LLM_API_KEY")
-LLM_BASE_URL: str | None = os.getenv("LLM_BASE_URL")  # e.g. for Ollama
+MATCHER_MODEL: str = os.getenv("MATCHER_MODEL", "gpt-4o-mini")
+MATCHER_API_KEY: str | None = os.getenv("MATCHER_API_KEY")
+MATCHER_BASE_URL: str | None = os.getenv("MATCHER_BASE_URL")
