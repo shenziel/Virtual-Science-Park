@@ -1,1 +1,307 @@
-[]
+[
+  {
+    "company_id": "cleura",
+    "opportunity_id": "2026-03160",
+    "score": 0.92,
+    "why": "Cleura's expertise in European digital sovereignty and compliance aligns well with the need for resilient, knowledge-intensive solutions within the European forest-based sector.",
+    "matched_claims": [
+      "what-1",
+      "prod-1",
+      "exp-1",
+      "app-1",
+      "mkt-1",
+      "prio-1",
+      "topic-1"
+    ],
+    "caveats": "Potential match — eligibility not confirmed."
+  },
+  {
+    "company_id": "cleura",
+    "opportunity_id": "2026-03975",
+    "score": 0.8931,
+    "why": "Cleura matches this opportunity because it provides open-source based infrastructure-as-a-service in a European cloud, aligning with the focus on European collaborations for sustainable food systems.",
+    "matched_claims": [
+      "what-1",
+      "prod-1",
+      "exp-1",
+      "app-1",
+      "mkt-1",
+      "prio-1",
+      "proj-1",
+      "topic-1"
+    ],
+    "caveats": "Potential match — eligibility not confirmed."
+  },
+  {
+    "company_id": "cleura",
+    "opportunity_id": "2026-00518",
+    "score": 0.8242,
+    "why": "Cleura matches this European collaborative project because it provides open-source IaaS in a European cloud, supporting regulated industries and enterprises within the European market.",
+    "matched_claims": [
+      "what-1",
+      "prod-1",
+      "exp-1",
+      "app-1",
+      "mkt-1",
+      "prio-1",
+      "topic-1"
+    ],
+    "caveats": "Potential match — eligibility not confirmed."
+  },
+  {
+    "company_id": "cleura",
+    "opportunity_id": "2026-02458",
+    "score": 0.6978,
+    "why": "Cleura matches this opportunity because it provides open-source based infrastructure-as-a-service in a European cloud, aligning with European digital sovereignty.",
+    "matched_claims": [
+      "what-1",
+      "exp-1",
+      "mkt-1",
+      "prio-1",
+      "topic-1"
+    ],
+    "caveats": "Potential match — eligibility not confirmed."
+  },
+  {
+    "company_id": "cleura",
+    "opportunity_id": "2026-01726",
+    "score": 0.5564,
+    "why": "Cleura's provision of open-source based infrastructure-as-a-service in a European cloud aligns well with the opportunity to assess internationalisation ambitions within a target country.",
+    "matched_claims": [
+      "what-1",
+      "exp-1",
+      "prio-1"
+    ],
+    "caveats": "Potential match — eligibility not confirmed."
+  },
+  {
+    "company_id": "cleura",
+    "opportunity_id": "2026-01106",
+    "score": 0.42,
+    "why": "Cleura matches this opportunity because its development priorities include building European digital sovereignty with open-source services.",
+    "matched_claims": [
+      "prio-1"
+    ],
+    "caveats": "Potential match — eligibility not confirmed."
+  },
+  {
+    "company_id": "cleura",
+    "opportunity_id": "2025-04692",
+    "score": 0.3531,
+    "why": "Cleura's expertise in European digital sovereignty and compliance aligns well with the needs of testing and validating new semiconductor technology in regulated industries.",
+    "matched_claims": [
+      "prod-1",
+      "exp-1",
+      "app-1"
+    ],
+    "caveats": "Potential match — eligibility not confirmed."
+  },
+  {
+    "company_id": "cleura",
+    "opportunity_id": "2026-01806",
+    "score": 0.2564,
+    "why": "Cleura's expertise in European digital sovereignty and compliance aligns well with the needs of preparatory projects for the EU co-funded Raw Materials Partnership.",
+    "matched_claims": [
+      "prod-1",
+      "exp-1",
+      "app-1"
+    ],
+    "caveats": "Potential match — eligibility not confirmed."
+  },
+  {
+    "company_id": "ocean-harvesting",
+    "opportunity_id": "2026-03160",
+    "score": 0.6422,
+    "why": "Ocean Harvesting Technologies AB aligns with this opportunity through its InfinityWEC Solution and past collaborations on EU-funded projects like INFINITY and WECHULL+.",
+    "matched_claims": [
+      "prod-1",
+      "cust-1",
+      "collab-1",
+      "topic-1"
+    ],
+    "caveats": "Potential match — eligibility not confirmed."
+  },
+  {
+    "company_id": "ocean-harvesting",
+    "opportunity_id": "2026-01726",
+    "score": 0.57,
+    "why": "Ocean Harvesting Technologies AB's stated products_services, the InfinityWEC Solution, align well with the Eureka Innowwide call supporting innovative SMEs for internationalisation.",
+    "matched_claims": [
+      "prod-1",
+      "proj-1",
+      "collab-1"
+    ],
+    "caveats": "Potential match — eligibility not confirmed."
+  },
+  {
+    "company_id": "ocean-harvesting",
+    "opportunity_id": "2026-03975",
+    "score": 0.5431,
+    "why": "Ocean Harvesting Technologies AB aligns with this opportunity because its stated collaborations include EU-funded projects like INFINITY and WECHULL+.",
+    "matched_claims": [
+      "cust-1",
+      "collab-1",
+      "topic-1"
+    ],
+    "caveats": "Potential match — eligibility not confirmed."
+  },
+  {
+    "company_id": "ocean-harvesting",
+    "opportunity_id": "2026-02458",
+    "score": 0.5109,
+    "why": "This opportunity aligns because Ocean Harvesting Technologies AB has stated an interest in the Clean Energy Transition Partnership (CETP) program and works with industrial partners.",
+    "matched_claims": [
+      "cust-1",
+      "topic-1"
+    ],
+    "caveats": "Potential match — eligibility not confirmed."
+  },
+  {
+    "company_id": "ocean-harvesting",
+    "opportunity_id": "2026-01106",
+    "score": 0.4724,
+    "why": "Ocean Harvesting Technologies AB aligns with this opportunity through its stated collaborations on EU-funded projects INFINITY and WECHULL+.",
+    "matched_claims": [
+      "proj-1",
+      "collab-1"
+    ],
+    "caveats": "Potential match — eligibility not confirmed."
+  },
+  {
+    "company_id": "ocean-harvesting",
+    "opportunity_id": "2026-00518",
+    "score": 0.4151,
+    "why": "Ocean Harvesting Technologies AB is a strong match because they have experience in EU-funded projects like INFINITY and WECHULL+.",
+    "matched_claims": [
+      "proj-1",
+      "collab-1"
+    ],
+    "caveats": "Potential match — eligibility not confirmed."
+  },
+  {
+    "company_id": "ocean-harvesting",
+    "opportunity_id": "2026-01806",
+    "score": 0.3422,
+    "why": "Ocean Harvesting Technologies AB aligns with this opportunity through its stated collaborations on EU-funded projects like INFINITY and WECHULL+.",
+    "matched_claims": [
+      "cust-1",
+      "proj-1",
+      "collab-1",
+      "topic-1"
+    ],
+    "caveats": "Potential match — eligibility not confirmed."
+  },
+  {
+    "company_id": "ocean-harvesting",
+    "opportunity_id": "2025-04692",
+    "score": 0.2584,
+    "why": "Ocean Harvesting Technologies AB's stated collaborations on EU-funded projects INFINITY and WECHULL+ align well with the testing and validation of new semiconductor technology.",
+    "matched_claims": [
+      "collab-1"
+    ],
+    "caveats": "Potential match — eligibility not confirmed."
+  },
+  {
+    "company_id": "softhouse",
+    "opportunity_id": "2026-02458",
+    "score": 0.8367,
+    "why": "Softhouse's expertise in technical partnership and application areas like energy transition aligns well with driving sustainable urban transformation through digital solutions.",
+    "matched_claims": [
+      "what-1",
+      "tech-1",
+      "exp-1",
+      "app-1",
+      "proj-1"
+    ],
+    "caveats": "Potential match — eligibility not confirmed."
+  },
+  {
+    "company_id": "softhouse",
+    "opportunity_id": "2026-03160",
+    "score": 0.8367,
+    "why": "Softhouse's expertise as a technical partner combining code, design, and business understanding aligns well with the need to create long-term and sustainable digital solutions for the forest-based sector.",
+    "matched_claims": [
+      "what-1",
+      "tech-1",
+      "exp-1",
+      "app-1",
+      "prio-1"
+    ],
+    "caveats": "Potential match — eligibility not confirmed."
+  },
+  {
+    "company_id": "softhouse",
+    "opportunity_id": "2026-03975",
+    "score": 0.8098,
+    "why": "Softhouse matches this opportunity because its expertise in helping companies create long-term and sustainable digital solutions aligns with the goal of changing to more sustainable food systems.",
+    "matched_claims": [
+      "what-1",
+      "tech-1",
+      "exp-1",
+      "prio-1",
+      "topic-1"
+    ],
+    "caveats": "Potential match — eligibility not confirmed."
+  },
+  {
+    "company_id": "softhouse",
+    "opportunity_id": "2026-01726",
+    "score": 0.7057,
+    "why": "Softhouse's focus on creating sustainable digital solutions, including AI and Computer Vision for nanometer scale image classification, aligns well with the Eureka Innowwide call's support for innovative SMEs.",
+    "matched_claims": [
+      "what-1",
+      "tech-1",
+      "prio-1",
+      "proj-1"
+    ],
+    "caveats": "Potential match — eligibility not confirmed."
+  },
+  {
+    "company_id": "softhouse",
+    "opportunity_id": "2026-00518",
+    "score": 0.5117,
+    "why": "Softhouse is a technical partner combining code, design, and business understanding, which aligns well with the European collaborative project in electronic components and systems.",
+    "matched_claims": [
+      "what-1",
+      "tech-1",
+      "exp-1"
+    ],
+    "caveats": "Potential match — eligibility not confirmed."
+  },
+  {
+    "company_id": "softhouse",
+    "opportunity_id": "2026-01106",
+    "score": 0.4926,
+    "why": "Softhouse matches this opportunity because it helps companies create long-term and sustainable digital solutions, aligning with the Advanced Manufacturing focus.",
+    "matched_claims": [
+      "what-1",
+      "proj-1"
+    ],
+    "caveats": "Potential match — eligibility not confirmed."
+  },
+  {
+    "company_id": "softhouse",
+    "opportunity_id": "2026-01806",
+    "score": 0.4057,
+    "why": "Softhouse's expertise as a technical partner combining code, design, and business understanding aligns well with the preparatory projects for the EU co-funded Raw Materials Partnership.",
+    "matched_claims": [
+      "what-1",
+      "tech-1",
+      "exp-1",
+      "prio-1"
+    ],
+    "caveats": "Potential match — eligibility not confirmed."
+  },
+  {
+    "company_id": "softhouse",
+    "opportunity_id": "2025-04692",
+    "score": 0.4042,
+    "why": "Softhouse's expertise as a technical partner combining code, design, and business understanding aligns well with testing and validating new semiconductor technology using AI and Computer Vision for image classification in nanometer scale.",
+    "matched_claims": [
+      "what-1",
+      "tech-1",
+      "exp-1"
+    ],
+    "caveats": "Potential match — eligibility not confirmed."
+  }
+]

@@ -1,0 +1,125 @@
+{
+  "company_id": "softhouse",
+  "name": "Softhouse",
+  "website": "https://www.softhouse.se",
+  "visibility": "private",
+  "is_simulated": false,
+  "updated_at": "2026-11-14T17:47:09.612938Z",
+  "claims": [
+    {
+      "id": "what-1",
+      "field": "what_it_does",
+      "value": "Helps companies create long-term and sustainable digital solutions",
+      "kind": "stated",
+      "evidence_url": "https://www.softhouse.se",
+      "snippet": "Vi hjälper företag att skapa långsiktiga och hållbara digitala lösningar på riktigt.",
+      "retrieved_at": "2026-11-14",
+      "confidence": 0.95,
+      "cached_snapshot": false
+    },
+    {
+      "id": "tech-1",
+      "field": "technologies",
+      "value": "AI and Computer Vision for image classification in nanometer scale",
+      "kind": "stated",
+      "evidence_url": "https://www.softhouse.se",
+      "snippet": "AI och Computer Vision för bildklassificering i nanometerskala",
+      "retrieved_at": "2026-11-14",
+      "confidence": 0.85,
+      "cached_snapshot": false
+    },
+    {
+      "id": "exp-1",
+      "field": "expertise",
+      "value": "Technical partner combining code, design, and business understanding",
+      "kind": "stated",
+      "evidence_url": "https://www.softhouse.se",
+      "snippet": "Vi är en teknisk partner som kombinerar kod, design och affärsförståelse för att skapa värde och forma framtiden.",
+      "retrieved_at": "2026-11-14",
+      "confidence": 0.9,
+      "cached_snapshot": false
+    },
+    {
+      "id": "app-1",
+      "field": "application_areas",
+      "value": "Digitalization of industrial companies, modernizing public services, energy transition",
+      "kind": "stated",
+      "evidence_url": "https://www.softhouse.se",
+      "snippet": "Vi hjälper industriella företag att accelerera sin digitalisering, optimera produktion och utnyttja kraften i data.",
+      "retrieved_at": "2026-11-14",
+      "confidence": 0.9,
+      "cached_snapshot": false
+    },
+    {
+      "id": "cust-1",
+      "field": "customer_groups",
+      "value": "Product companies",
+      "kind": "stated",
+      "evidence_url": "https://www.softhouse.se",
+      "snippet": "Produktbolag > Vi utvecklar framtidens digitala tjänster, stärka innovation och ökar kundvärdet genom hela livscykeln.",
+      "retrieved_at": "2026-11-14",
+      "confidence": 0.85,
+      "cached_snapshot": false
+    },
+    {
+      "id": "geo-1",
+      "field": "geographic_focus",
+      "value": "Malmö, Karlskrona, Karlshamn, Kalmar, Stockholm, Uppsala, Luleå, Sarajevo, Milou",
+      "kind": "stated",
+      "evidence_url": "https://www.softhouse.se",
+      "snippet": "Våra kontor Malmö Karlskrona Karlshamn Kalmar Stockholm Uppsala Luleå Sarajevo Milou",
+      "retrieved_at": "2026-11-14",
+      "confidence": 0.95,
+      "cached_snapshot": false
+    },
+    {
+      "id": "prio-1",
+      "field": "development_priorities",
+      "value": "Focus on business challenges rather than just the most modern code stack",
+      "kind": "inferred",
+      "evidence_url": "https://www.softhouse.se",
+      "snippet": "Vi börjar med problemet – inte tekniken",
+      "retrieved_at": "2026-11-14",
+      "confidence": 0.8,
+      "cached_snapshot": false
+    },
+    {
+      "id": "proj-1",
+      "field": "projects",
+      "value": "AI framework agreement with IUC Syd",
+      "kind": "stated",
+      "evidence_url": "https://www.softhouse.se",
+      "snippet": "Softhouse vinner AI-ramavtal med IUC Syd – ska stärka skånsk industris konkurrenskraft",
+      "retrieved_at": "2026-11-14",
+      "confidence": 0.9,
+      "cached_snapshot": false
+    },
+    {
+      "id": "collab-1",
+      "field": "collaborations",
+      "value": "IUC Syd",
+      "kind": "stated",
+      "evidence_url": "https://www.softhouse.se",
+      "snippet": "Softhouse vinner AI-ramavtal med IUC Syd – ska stärka skånsk industris konkurrenskraft",
+      "retrieved_at": "2026-11-14",
+      "confidence": 0.9,
+      "cached_snapshot": false
+    },
+    {
+      "id": "topic-1",
+      "field": "topics",
+      "value": "Artificial Intelligence, Digital Transformation, Sustainability",
+      "kind": "stated",
+      "evidence_url": "https://www.softhouse.se",
+      "snippet": "Allt om AI ger insikter, inspiration och strategiska perspektiv på hur artificiell intelligens formar framtidens affärer, samhälle och innovation.",
+      "retrieved_at": "2026-11-14",
+      "confidence": 0.9,
+      "cached_snapshot": false
+    }
+  ],
+  "missing_fields": [
+    "products_services",
+    "markets",
+    "industries"
+  ]
+}

@@ -1,0 +1,154 @@
+{
+  "company_id": "cleura",
+  "name": "Cleura",
+  "website": "https://cleura.com",
+  "visibility": "private",
+  "is_simulated": false,
+  "updated_at": "2026-11-14T17:47:24.000498Z",
+  "claims": [
+    {
+      "id": "what-1",
+      "field": "what_it_does",
+      "value": "Provides open-source based infrastructure-as-a-service (IaaS) in a European cloud.",
+      "kind": "stated",
+      "evidence_url": "https://cleura.com",
+      "snippet": "We provide open-source based infrastructure-as-a-service (IaaS), built on OpenStack, with all data hosted in certified European data centers.",
+      "retrieved_at": "2026-11-14",
+      "confidence": 0.95,
+      "cached_snapshot": false
+    },
+    {
+      "id": "prod-1",
+      "field": "products_services",
+      "value": "Compliant Cloud, Public Cloud, and Private Cloud deployment models.",
+      "kind": "stated",
+      "evidence_url": "https://cleura.com",
+      "snippet": "Compliant Cloud Public Cloud Private Cloud",
+      "retrieved_at": "2026-11-14",
+      "confidence": 0.9,
+      "cached_snapshot": false
+    },
+    {
+      "id": "tech-1",
+      "field": "technologies",
+      "value": "OpenStack",
+      "kind": "stated",
+      "evidence_url": "https://cleura.com",
+      "snippet": "Cleura Cloud is powered by OpenStack.",
+      "retrieved_at": "2026-11-14",
+      "confidence": 0.95,
+      "cached_snapshot": false
+    },
+    {
+      "id": "exp-1",
+      "field": "expertise",
+      "value": "European digital sovereignty and compliance for mission critical data.",
+      "kind": "inferred",
+      "evidence_url": "https://cleura.com",
+      "snippet": "European digital sovereignty guaranteed",
+      "retrieved_at": "2026-11-14",
+      "confidence": 0.9,
+      "cached_snapshot": false
+    },
+    {
+      "id": "app-1",
+      "field": "application_areas",
+      "value": "Regulated industries, developers, SMB, and Enterprises.",
+      "kind": "stated",
+      "evidence_url": "https://cleura.com",
+      "snippet": "Our cloud deployment models facilitate and power innovation for regulated industries, developers, SMB, and Enterprises.",
+      "retrieved_at": "2026-11-14",
+      "confidence": 0.9,
+      "cached_snapshot": false
+    },
+    {
+      "id": "mkt-1",
+      "field": "markets",
+      "value": "Europe",
+      "kind": "stated",
+      "evidence_url": "https://cleura.com",
+      "snippet": "A European cloud provider",
+      "retrieved_at": "2026-11-14",
+      "confidence": 0.9,
+      "cached_snapshot": false
+    },
+    {
+      "id": "ind-1",
+      "field": "industries",
+      "value": "Defense, Public Sector, AI, Media, MedTech, Cybersecurity",
+      "kind": "stated",
+      "evidence_url": "https://cleura.com",
+      "snippet": "Defense Public Sector AI Media MedTech Cybersecurity",
+      "retrieved_at": "2026-11-14",
+      "confidence": 0.9,
+      "cached_snapshot": false
+    },
+    {
+      "id": "cust-1",
+      "field": "customer_groups",
+      "value": "Enterprises, SMB, developers, municipalities",
+      "kind": "stated",
+      "evidence_url": "https://cleura.com",
+      "snippet": "Our cloud deployment models facilitate and power innovation for regulated industries, developers, SMB, and Enterprises.",
+      "retrieved_at": "2026-11-14",
+      "confidence": 0.9,
+      "cached_snapshot": false
+    },
+    {
+      "id": "geo-1",
+      "field": "geographic_focus",
+      "value": "Sweden and Germany",
+      "kind": "stated",
+      "evidence_url": "https://cleura.com",
+      "snippet": "Cleura Cloud runs in multiple European regions, including Sweden and Germany",
+      "retrieved_at": "2026-11-14",
+      "confidence": 0.9,
+      "cached_snapshot": false
+    },
+    {
+      "id": "prio-1",
+      "field": "development_priorities",
+      "value": "Building European digital sovereignty with open-source services.",
+      "kind": "inferred",
+      "evidence_url": "https://cleura.com",
+      "snippet": "We are committed to a data-sovereign Europe, driving business with sustainable, open-source, and european cloud services.",
+      "retrieved_at": "2026-11-14",
+      "confidence": 0.9,
+      "cached_snapshot": false
+    },
+    {
+      "id": "proj-1",
+      "field": "projects",
+      "value": "EU sovereign collaboration suite",
+      "kind": "stated",
+      "evidence_url": "https://cleura.com",
+      "snippet": "Cleura announces EU sovereign collaboration suite and strategic partnership with Nextcloud",
+      "retrieved_at": "2026-11-14",
+      "confidence": 0.8,
+      "cached_snapshot": false
+    },
+    {
+      "id": "collab-1",
+      "field": "collaborations",
+      "value": "Nextcloud",
+      "kind": "stated",
+      "evidence_url": "https://cleura.com",
+      "snippet": "Cleura announces EU sovereign collaboration suite and strategic partnership with Nextcloud",
+      "retrieved_at": "2026-11-14",
+      "confidence": 0.8,
+      "cached_snapshot": false
+    },
+    {
+      "id": "topic-1",
+      "field": "topics",
+      "value": "European digital sovereignty, data sovereignty, compliance",
+      "kind": "stated",
+      "evidence_url": "https://cleura.com",
+      "snippet": "European digital sovereignty guaranteed",
+      "retrieved_at": "2026-11-14",
+      "confidence": 0.95,
+      "cached_snapshot": false
+    }
+  ],
+  "missing_fields": []
+}

@@ -1,3 +1,6 @@
 [
-  {"id": "u-admin", "email": "admin@bsp.example.com", "role": "admin", "company_id": null, "password": "demo-admin-2026"}
+  {"id": "u-admin", "email": "admin@bsp.example.com", "role": "admin", "company_id": null, "password": "demo-admin-2026"},
+  {"id": "u-softhouse", "email": "demo@softhouse.example.com", "role": "company", "company_id": "softhouse", "password": "demo-softhouse-2026"},
+  {"id": "u-cleura", "email": "demo@cleura.example.com", "role": "company", "company_id": "cleura", "password": "demo-cleura-2026"},
+  {"id": "u-ocean-harvesting", "email": "demo@ocean-harvesting.example.com", "role": "company", "company_id": "ocean-harvesting", "password": "demo-ocean-harvesting-2026"}
 ]
