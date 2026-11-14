@@ -39,6 +39,21 @@ def test_seed_users_are_valid(seed):
     assert len({u.email for u in users}) == len(users)
 
 
+def test_companies_list_is_valid():
+    """fixtures/companies.json drives the profiler: unique slugs, official http(s) websites."""
+    import json
+    import re
+
+    companies = json.loads((FIXTURES / "companies.json").read_text(encoding="utf-8"))
+    ids = [c["company_id"] for c in companies]
+    assert len(ids) == len(set(ids))
+    for c in companies:
+        assert set(c) == {"company_id", "name", "website"}, c
+        assert re.fullmatch(r"[a-z0-9][a-z0-9-]*", c["company_id"]), c
+        assert re.fullmatch(r"https?://\S+", c["website"]), c
+        assert c["name"].strip(), c
+
+
 def test_company_users_match_profiles(seed):
     if not seed.profiles:
         pytest.skip("no company profiles yet")

@@ -10,9 +10,25 @@ from __future__ import annotations
 
 import os
 from pathlib import Path
+from typing import Mapping
 
 PROFILER_DIR = Path(__file__).parent
-CACHE_DIR = Path(os.getenv("PROFILER_CACHE_DIR") or PROFILER_DIR / "cache")
+
+
+def _cache_root(environ: Mapping[str, str] | None = None) -> Path:
+    """Where profiles and cached pages go.
+
+    ``PROFILER_CACHE_DIR`` names it directly. Otherwise ``CACHE_DIR`` is used:
+    that is the variable ``docker-compose.yml`` sets for every service, so a
+    one-off ``docker compose run … python -m agents.profiler`` writes to the
+    ``/data`` volume instead of into the read-only image. The folder default
+    keeps a plain checkout working with no environment at all.
+    """
+    env = os.environ if environ is None else environ
+    return Path(env.get("PROFILER_CACHE_DIR") or env.get("CACHE_DIR") or PROFILER_DIR / "cache")
+
+
+CACHE_DIR = _cache_root()
 PAGE_CACHE_DIR = Path(os.getenv("PROFILER_PAGE_CACHE_DIR") or CACHE_DIR / "pages")
 PROMPTS_DIR = PROFILER_DIR / "prompts"
 PROMPT_FILE = PROMPTS_DIR / "extract_claims.md"
