@@ -82,6 +82,15 @@ class Visibility(str, Enum):
     published = "published"  # everyone
 
 
+class CompanySummary(_Strict):
+    """One row of GET /companies."""
+
+    company_id: Slug
+    name: NonEmpty
+    visibility: Visibility
+    is_simulated: bool = False
+
+
 class Profile(_Strict):
     company_id: Slug
     name: NonEmpty
