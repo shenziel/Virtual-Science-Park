@@ -109,8 +109,17 @@ class ProfilerAgent:
     ) -> List[Claim]:
         # If LLM client is configured, call LLM using prompt. Otherwise, use robust rule-based/mock extraction for testing and offline demo.
         if self.llm_client is not None:
-            # LLM integration logic here if available
-            pass
+            prompt = self._load_prompt()
+            response = self.llm_client.chat(
+                prompt=prompt,
+                content=f"Company: {company_name}\nURL: {website_url}\nContent: {html_content[:5000]}"
+            )
+            try:
+                data = json.loads(response)
+                return [Claim(**c) for c in data]
+            except Exception as e:
+                # Log error and fall back to rule-based logic
+                print(f"LLM extraction failed: {e}")
 
         # Mock / rule-based robust extractor for demo and offline execution
         claims = []
