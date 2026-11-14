@@ -96,3 +96,36 @@ def test_admin_refresh_reports_failure(client, monkeypatch):
     body = client.post("/admin/opportunities/refresh", headers=auth(token)).json()
     assert body["failed"] is True and body["stored"] == 0
     assert client.get("/opportunities").json() == []
+
+
+def _live_vinnova_batch(n=15):
+    return [Opportunity(id=f"2025-{4600 + i:05d}", type="funding", title=f"Vinnova call {i}",
+                        url=f"https://data.vinnova.se/api/ansokningsomgangar/2025-{4600 + i:05d}",
+                        source="Vinnova", deadline=date(2027, 1, 12), topics=["innovation"],
+                        retrieved_at=TODAY) for i in range(n)]
+
+
+def test_live_vinnova_batch_reaches_get_opportunities_at_startup(started):
+    """The monitors' 15 live Vinnova items are stored in SQLite and served with their labels."""
+    with started(lambda: _live_vinnova_batch() + [BSP_CACHED]) as c:
+        opps = c.get("/opportunities").json()
+    vinnova = [o for o in opps if o["source"] == "Vinnova"]
+    assert len(vinnova) == 15 and len(opps) == 16
+    assert all(o["is_simulated"] is False and o["cached_snapshot"] is False for o in vinnova)
+    assert all(o["url"].startswith("https://data.vinnova.se/") for o in vinnova)
+    assert [o for o in opps if o["source"] != "Vinnova"][0]["cached_snapshot"] is True
+
+
+def test_admin_refresh_loads_live_vinnova_into_empty_list(started, monkeypatch):
+    """An empty list after a failed startup fills in once an admin refresh succeeds."""
+
+    def broken():
+        raise TimeoutError("vinnova slow")
+
+    with started(broken) as c:
+        assert c.get("/opportunities").json() == []
+        monkeypatch.setattr(agents.monitors, "fetch_all_opportunities", lambda: _live_vinnova_batch())
+        token = login(c, "admin@bsp.example.com", "demo-admin-2026")["access_token"]
+        body = c.post("/admin/opportunities/refresh", headers=auth(token)).json()
+        assert body["stored"] == 15 and body["vinnova"] == 15 and body["failed"] is False
+        assert len(c.get("/opportunities").json()) == 15
