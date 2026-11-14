@@ -317,3 +317,20 @@ def delete_session(conn: sqlite3.Connection, token: str) -> None:
 
 def count_users(conn: sqlite3.Connection) -> int:
     return conn.execute("SELECT COUNT(*) FROM users").fetchone()[0]
+
+
+def replace_opportunities(conn: sqlite3.Connection, opportunities: list[Opportunity]) -> int:
+    """Make `opportunities` the complete set: upsert them and delete every other row.
+
+    Deleting an opportunity also deletes its recommendations and feedback
+    (ON DELETE CASCADE). Returns how many old opportunities were removed.
+    """
+    rows = [(o.id, Opportunity.model_validate(o.model_dump()).model_dump_json()) for o in opportunities]
+    keep = {o.id for o in opportunities}
+    with conn:
+        stale = [r["id"] for r in conn.execute("SELECT id FROM opportunities") if r["id"] not in keep]
+        conn.executemany("DELETE FROM opportunities WHERE id=?", [(i,) for i in stale])
+        conn.executemany(
+            "INSERT INTO opportunities (id, data) VALUES (?,?) ON CONFLICT(id) DO UPDATE SET data=excluded.data", rows
+        )
+    return len(stale)

@@ -10,6 +10,8 @@ def db_url(tmp_path, monkeypatch):
     url = f"sqlite:///{tmp_path / 'test.db'}"
     monkeypatch.setenv("DATABASE_URL", url)
     monkeypatch.setenv("SEED_DIR", str(MOCK))
+    # No network in tests: refresh tests enable it explicitly with fake monitors.
+    monkeypatch.setenv("OPPORTUNITY_REFRESH", "off")
     return url
 
 
