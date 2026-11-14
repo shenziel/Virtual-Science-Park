@@ -15,7 +15,9 @@ evidence, so there is none.
 """
 from __future__ import annotations
 
+import gzip
 import hashlib
+import io
 import json
 import logging
 import time
@@ -80,7 +82,27 @@ def http_transport(url: str, user_agent: str, timeout: float) -> tuple[str, byte
         },
     )
     with request.urlopen(req, timeout=timeout) as response:  # noqa: S310 (https only)
-        return response.geturl(), response.read(config.MAX_PAGE_BYTES)
+        body = response.read(config.MAX_PAGE_BYTES)
+        content_encoding = response.headers.get("Content-Encoding", "")
+        return response.geturl(), _decode_content(body, content_encoding)
+
+
+def _decode_content(body: bytes, content_encoding: str) -> bytes:
+    """Decode supported HTTP content encodings without exceeding the page limit."""
+    encodings = [encoding.strip().lower() for encoding in content_encoding.split(",")]
+    for encoding in reversed(encodings):
+        if encoding in {"", "identity"}:
+            continue
+        if encoding not in {"gzip", "x-gzip"}:
+            raise FetchError(f"unsupported content encoding: {encoding}")
+        try:
+            with gzip.GzipFile(fileobj=io.BytesIO(body)) as compressed:
+                body = compressed.read(config.MAX_PAGE_BYTES + 1)
+        except (OSError, EOFError) as exc:
+            raise FetchError("invalid gzip-compressed response") from exc
+        if len(body) > config.MAX_PAGE_BYTES:
+            raise FetchError("decompressed page exceeds the maximum size")
+    return body
 
 
 class CachedFetcher:

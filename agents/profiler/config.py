@@ -10,9 +10,57 @@ from __future__ import annotations
 
 import os
 from pathlib import Path
-from typing import Mapping
+from typing import Mapping, MutableMapping
 
 PROFILER_DIR = Path(__file__).parent
+_PROFILER_ENV_KEYS = frozenset(
+    {
+        "MODEL_RUNTIME",
+        "MODEL_NAME",
+        "MODEL_API_KEY",
+        "MODEL_BASE_URL",
+        "OLLAMA_HOST",
+        "CACHE_DIR",
+        "PROFILER_CACHE_DIR",
+        "PROFILER_PAGE_CACHE_DIR",
+        "PROFILER_USER_AGENT",
+        "PROFILER_MIN_INTERVAL",
+        "PROFILER_TIMEOUT",
+    }
+)
+
+
+def _load_env_file(
+    path: Path, environ: MutableMapping[str, str] | None = None
+) -> None:
+    """Load profiler settings from a simple .env file without overriding the process."""
+    env = os.environ if environ is None else environ
+    if not path.exists():
+        return
+
+    values: dict[str, str] = {}
+    for line_number, raw_line in enumerate(path.read_text(encoding="utf-8").splitlines(), 1):
+        line = raw_line.strip()
+        if not line or line.startswith("#"):
+            continue
+        if line.startswith("export "):
+            line = line[len("export "):].lstrip()
+        key, separator, value = line.partition("=")
+        if not separator:
+            raise ValueError(f"{path}:{line_number}: expected KEY=VALUE")
+        key = key.strip()
+        if key not in _PROFILER_ENV_KEYS:
+            continue
+        value = value.strip()
+        if len(value) >= 2 and value[0] == value[-1] and value[0] in {"'", '"'}:
+            value = value[1:-1]
+        values[key] = value
+
+    for key, value in values.items():
+        env.setdefault(key, value)
+
+
+_load_env_file(PROFILER_DIR.parents[1] / ".env")
 
 
 def _cache_root(environ: Mapping[str, str] | None = None) -> Path:

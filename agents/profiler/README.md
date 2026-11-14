@@ -10,7 +10,7 @@ in `missing_fields`.
 ## Run it
 
 ```bash
-# model runtime comes from the environment (see .env.example)
+# direct runs load model settings from the repository-root .env; process env wins
 export MODEL_RUNTIME=ollama MODEL_NAME=llama3.1 OLLAMA_HOST=http://localhost:11434
 
 python -m agents.profiler \
