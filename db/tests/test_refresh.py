@@ -147,3 +147,50 @@ def test_stale_opportunity_removed_with_its_feedback(conn):
     refresh_opportunities(conn, fetch_fn=lambda: [LIVE_VINNOVA])  # BSP item gone at the source
     assert "bsp-cached-1" not in stored(conn)
     assert conn.execute("SELECT COUNT(*) FROM feedback").fetchone()[0] == 0
+
+
+# --------------------------------------- a source that returns nothing
+
+
+def test_failed_fetch_keeps_previous_live_opportunities(conn, caplog):
+    """A timeout must not wipe what was stored: live items and their rankings stay."""
+    refresh_opportunities(conn, fetch_fn=lambda: [LIVE_VINNOVA])
+    before = database.list_recommendations(conn, "nordsense")
+    assert before
+
+    def broken():
+        raise TimeoutError("vinnova read timed out")
+
+    with caplog.at_level(logging.WARNING, logger="db.refresh"):
+        result = refresh_opportunities(conn, fetch_fn=broken)
+    assert result.failed is True and result.kept == 1 and result.removed == 0
+    assert set(stored(conn)) == {"vinnova-live-1"}
+    assert database.list_recommendations(conn, "nordsense") == before
+    assert "kept 1 stored opportunities" in caplog.text
+
+
+def test_one_source_empty_keeps_only_that_sources_items(conn):
+    other = opp("vinnova-live-2")
+    refresh_opportunities(conn, fetch_fn=lambda: [LIVE_VINNOVA, other, opp("bsp-live-1", source="Blue Science Park",
+                                                                             event_date=date(2027, 1, 1))])
+    # Vinnova times out, BSP answers with a new list that no longer has bsp-live-1.
+    result = refresh_opportunities(conn, fetch_fn=lambda: [opp("bsp-live-2", source="Blue Science Park")])
+    assert set(stored(conn)) == {"vinnova-live-1", "vinnova-live-2", "bsp-live-2"}
+    assert result.kept == 2 and result.removed == 1
+
+
+def test_kept_items_must_be_live_and_current(conn):
+    expired = opp("vinnova-old", deadline=date(2020, 1, 1))
+    past_event = opp("bsp-past", source="Blue Science Park", deadline=None, event_date=date(2020, 5, 1))
+    refresh_opportunities(conn, fetch_fn=lambda: [LIVE_VINNOVA, expired, past_event, BSP_CACHED, BSP_SIMULATED])
+    result = refresh_opportunities(conn, fetch_fn=lambda: [])
+    # Only the live, still-open item survives; cached, simulated and past items are dropped.
+    assert set(stored(conn)) == {"vinnova-live-1"}
+    assert result.kept == 1
+
+
+def test_source_that_answers_still_removes_items_gone_at_the_source(conn):
+    refresh_opportunities(conn, fetch_fn=lambda: [LIVE_VINNOVA, opp("vinnova-live-2")])
+    result = refresh_opportunities(conn, fetch_fn=lambda: [LIVE_VINNOVA])
+    assert set(stored(conn)) == {"vinnova-live-1"}
+    assert result.kept == 0 and result.removed == 1

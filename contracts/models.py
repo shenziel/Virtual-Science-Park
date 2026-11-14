@@ -203,6 +203,7 @@ class RefreshResult(_Strict):
     stored: int = 0
     vinnova: int = 0
     removed: int = 0
+    kept: int = 0  # stored live items kept because their source returned nothing this time
     dropped_invalid: int = 0
     dropped_vinnova_not_live: int = 0
     dropped_duplicate: int = 0

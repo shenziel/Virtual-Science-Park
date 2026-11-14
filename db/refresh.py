@@ -15,6 +15,12 @@ Rules:
 - If the monitors fail entirely, the result is empty and the failure is logged.
 - The fetched set replaces all stored opportunities (seeded mock ones included),
   then every company is re-ranked against it.
+- Except: when a source returns nothing (a timeout, an outage), its stored items
+  are kept instead of deleted, so one slow request can't wipe the opportunities
+  and every company's ranking. Only items that are live (not simulated, not a
+  cached snapshot) and still current (deadline or event date not passed) are
+  kept, and a warning is logged. A source that answers replaces its own items
+  as before, so items gone at the source are still removed.
 """
 
 from __future__ import annotations
@@ -22,6 +28,7 @@ from __future__ import annotations
 import logging
 import sqlite3
 from collections.abc import Callable, Iterable, Sequence
+from datetime import date
 from typing import Any
 
 from pydantic import BaseModel, ValidationError
@@ -90,6 +97,24 @@ def collect_opportunities(fetch_fn: FetchFn | None = None) -> tuple[list[Opportu
     return opps, result
 
 
+def _still_current(opp: Opportunity, today: date) -> bool:
+    if opp.deadline:
+        return opp.deadline >= today
+    if opp.event_date:
+        return opp.event_date >= today
+    return True
+
+
+def keep_unanswered(previous: Iterable[Opportunity], fetched: Sequence[Opportunity],
+                    today: date | None = None) -> list[Opportunity]:
+    """Stored items worth keeping because their source returned nothing this time."""
+    today = today or date.today()
+    answered = {o.source for o in fetched}
+    return [o for o in previous
+            if o.source not in answered and not o.is_simulated and not o.cached_snapshot
+            and _still_current(o, today)]
+
+
 def refresh_opportunities(
     conn: sqlite3.Connection,
     fetch_fn: FetchFn | None = None,
@@ -97,6 +122,13 @@ def refresh_opportunities(
 ) -> RefreshResult:
     """Collect from the monitors, store as the full opportunity set, re-rank every company."""
     opps, result = collect_opportunities(fetch_fn)
+    kept = keep_unanswered(database.list_opportunities(conn), opps)
+    if kept:
+        result.kept = len(kept)
+        sources = ", ".join(sorted({o.source for o in kept}))
+        log.warning("kept %d stored opportunities from sources that returned nothing this time (%s)",
+                    len(kept), sources)
+        opps = opps + kept
     result.removed = database.replace_opportunities(conn, opps)
     matcher = match_fn or _default_match
     for company in database.list_companies(conn):
