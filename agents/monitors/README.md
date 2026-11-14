@@ -16,8 +16,9 @@ Per AGENTS.md §5:
 ## Contract Compliance & Guarantees
 
 - **No Inventions:** Every opportunity requires a live `url` (`http://` or `https://`) and at least one real date (`published`, `deadline`, or `event_date`). Items missing either are dropped immediately.
-- **Offline Reliability:** If public network endpoints are unreachable or in test/sandbox environments, monitors fall back to dated, labelled cached snapshots in `snapshots/`.
-- **Badging / Labelling:** All cached snapshot items explicitly set `cached_snapshot=True`.
+- **Offline Behavior:** Blue Science Park events can use a dated, labelled cached snapshot. Vinnova funding returns no items if the live API is unavailable; there is no fabricated funding snapshot.
+- **Badging / Labelling:** Cached event items explicitly set `cached_snapshot=True`. Vinnova results always come from live API responses and set `cached_snapshot=False`.
+- **Vinnova API:** Reads calls and application rounds from the documented `data.vinnova.se` endpoints, joins them by case number, and emits only public rounds with a future closing date. `VINNOVA_UPDATED_SINCE` can override the default two-year lookback date.
 - **Identifying User-Agent:** All HTTP requests send:
   `VirtualScienceParkBot/1.0 (+https://www.bluesciencepark.se; contact@bluesciencepark.se)`
 - **Validation:** Every item returned by `fetch_all_opportunities()` validates against `contracts.models.Opportunity`.
@@ -49,7 +50,7 @@ agents/monitors/
 ```python
 from agents.monitors import fetch_all_opportunities
 
-# Fetch opportunities from all monitors (automatically uses snapshots if offline)
+# Fetch live funding opportunities and events (events may use a labelled snapshot offline)
 opportunities = fetch_all_opportunities()
 
 for opp in opportunities:

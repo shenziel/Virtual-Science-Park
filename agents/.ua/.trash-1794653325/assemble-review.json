@@ -1,0 +1,33 @@
+{
+  "issues": [
+    {
+      "severity": "error",
+      "category": "edge-validity",
+      "message": "The graph contains a semantically invalid contains edge from file:matcher/matcher.py to file:matcher/config.py. A file should contain symbols, not another file; the relationship is already represented as imports.",
+      "evidence": "assembled-graph.json edges include file:matcher/matcher.py -> file:matcher/config.py with type contains."
+    },
+    {
+      "severity": "error",
+      "category": "coverage",
+      "message": "Representative monitor and profiler implementation methods are absent from the symbol graph. The graph has class nodes for BaseMonitor, BSPEventsMonitor, VinnovaFundingMonitor, and ProfilerAgent, but no contained method/function nodes for their substantial public behavior.",
+      "evidence": "monitors/base.py defines slugify, parse_date_safely, sanitize_opportunity_data, and multiple BaseMonitor methods; profiler/profiler.py defines ProfilerAgent methods including fetch_website, profile_company, and _extract_claims_from_content."
+    }
+  ],
+  "warnings": [
+    {
+      "category": "graph-completeness",
+      "message": "All 21 paths listed in batch-0.json appear to have corresponding file-level nodes, and the supplied graph totals are 34 nodes and 51 edges. However, the graph is limited to the agents subtree and does not model the contracts.models dependency imported by matcher and monitors, so the cross-package contract boundary is not visible.",
+      "evidence": "matcher/matcher.py and monitors/base.py import contracts.models, while no contracts node is present in the assembled graph."
+    },
+    {
+      "category": "graph-completeness",
+      "message": "The graph does not expose the runtime integration path between profiling, opportunity aggregation, and matching; it contains separate subgraphs for profiler, monitors, and matcher with no cross-component data-flow edges.",
+      "evidence": "The assembled edge list contains no edges connecting profiler nodes to monitor or matcher nodes."
+    },
+    {
+      "category": "metadata",
+      "message": "Class nodes carry a redundant top-level class field in addition to id/type/name. This is harmless for lookup but inconsistent with the normal node shape and should be normalized in a future assembly pass."
+    }
+  ],
+  "summary": "The assembled graph has complete file-path coverage for the provided batch and no apparent dangling node references, but it has one invalid file-to-file contains edge and under-represents the monitor/profiler implementations by omitting their methods. The major architectural gap is the missing contracts dependency and absent cross-component integration/data-flow relationships between profiling, monitoring, and matching."
+}

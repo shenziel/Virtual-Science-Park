@@ -1,0 +1,27 @@
+{
+  "projectRoot": "/home/ruplaal/campor-hackathon/Virtual-Science-Park/agents",
+  "filePaths": [
+    "matcher/README.md",
+    "matcher/__init__.py",
+    "matcher/config.py",
+    "matcher/matcher.py",
+    "matcher/prompts/why_v1.md",
+    "matcher/tests/__init__.py",
+    "matcher/tests/test_matcher.py",
+    "monitors/README.md",
+    "monitors/__init__.py",
+    "monitors/base.py",
+    "monitors/bsp_events.py",
+    "monitors/config.py",
+    "monitors/snapshots/bsp_events.json",
+    "monitors/snapshots/vinnova_calls.json",
+    "monitors/tests/__init__.py",
+    "monitors/tests/test_monitors.py",
+    "monitors/vinnova.py",
+    "profiler/models.py",
+    "profiler/profiler.py",
+    "profiler/prompts/extract_claims.md",
+    "profiler/tests/test_profiler.py"
+  ],
+  "gitCommitHash": "9479593c2315e996a6b3e9636a9bb5eb9d27527b"
+}
