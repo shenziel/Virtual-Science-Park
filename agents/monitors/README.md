@@ -9,7 +9,7 @@
 
 Per AGENTS.md §5:
 1. **Funding Source:** Vinnova open calls (`VinnovaFundingMonitor`)
-2. **Events Source:** Blue Science Park's public WordPress event collection (`BSPEventsMonitor`)
+2. **Events Sources:** Blue Science Park's public WordPress event collection (`BSPEventsMonitor`) and public event pages linked from member company websites (`MemberCompanyEventsMonitor`).
 
 ---
 
@@ -20,7 +20,8 @@ Per AGENTS.md §5:
 - **Badging / Labelling:** Live Vinnova and Blue Science Park records set `is_simulated=False` and `cached_snapshot=False`.
 - **Vinnova API:** Joins public calls and application rounds by case number, emits only public rounds with a future closing date, and uses a human-facing URL from Vinnova's `LankLista`. Records without a public call page are dropped instead of linking to the JSON API or an application form. `VINNOVA_UPDATED_SINCE` overrides the default two-year lookback date.
 - **Blue Science Park API:** Reads the public `/wp-json/wp/v2/event` collection. It emits only events with an explicitly year-qualified future date in the event content, and uses the record's canonical event page URL. It does not infer a year from the publication date.
-- **Environment names:** Source settings use `MONITOR_REQUEST_TIMEOUT` (default 35 seconds), `VINNOVA_API_URL`, `VINNOVA_UPDATED_SINCE`, and `BSP_EVENTS_FEED_URL`. The latter now defaults to the public WordPress API endpoint. `MONITOR_BASE_URL`, `MONITOR_MODEL`, and `MONITOR_API_KEY` are also read for consistency, but these deterministic monitors make no LLM calls.
+- **Member company events:** Reads `fixtures/companies.json` for official company websites, checks each site's `robots.txt`, then fetches only same-host links clearly identified as events, calendars, webinars, seminars, conferences, workshops or meetups. If `robots.txt` is unavailable or disallows a URL, that site/page is skipped. Only explicit full dates in the future are returned, with the company's event page as the source URL; no snapshot or guessed data is used. Requests are bounded by `COMPANY_EVENT_MAX_PAGES` (default 12 per company) and use the shared timeout and identifying User-Agent.
+- **Environment names:** Source settings use `MONITOR_REQUEST_TIMEOUT` (default 35 seconds), `VINNOVA_API_URL`, `VINNOVA_UPDATED_SINCE`, `BSP_EVENTS_FEED_URL`, `MEMBER_COMPANIES_PATH` and `COMPANY_EVENT_MAX_PAGES`. `MONITOR_BASE_URL`, `MONITOR_MODEL`, and `MONITOR_API_KEY` are also read for consistency, but these deterministic monitors make no LLM calls.
 - **Identifying User-Agent:** All HTTP requests send:
   `VirtualScienceParkBot/1.0 (+https://www.bluesciencepark.se; contact@bluesciencepark.se)`
 - **Validation:** Every item returned by `fetch_all_opportunities()` validates against `contracts.models.Opportunity`.
@@ -36,6 +37,7 @@ agents/monitors/
 ├── config.py             # URLs, timeout, user agent, snapshot paths
 ├── vinnova.py            # VinnovaFundingMonitor
 ├── bsp_events.py         # BSPEventsMonitor
+├── company_events.py    # robots-aware member-company event discovery
 ├── snapshots/            # Empty until a source snapshot is verified and labelled
 │   ├── vinnova_calls.json
 │   └── bsp_events.json

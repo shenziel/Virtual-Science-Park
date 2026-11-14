@@ -45,3 +45,8 @@ BSP_EVENTS_FEED_URL = os.getenv(
     "BSP_EVENTS_FEED_URL",
     "https://www.bluesciencepark.se/wp-json/wp/v2/event?per_page=100&_fields=date,link,title,content,excerpt",
 )
+MEMBER_COMPANIES_PATH = Path(os.getenv(
+    "MEMBER_COMPANIES_PATH",
+    str(Path(__file__).resolve().parents[2] / "fixtures" / "companies.json"),
+))
+COMPANY_EVENT_MAX_PAGES = int(os.getenv("COMPANY_EVENT_MAX_PAGES", "12"))
