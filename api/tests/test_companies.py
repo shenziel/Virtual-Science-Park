@@ -250,3 +250,46 @@ def test_cors_allows_only_ui_origin(db_url, monkeypatch):
     finally:
         monkeypatch.delenv("UI_ORIGIN")
         importlib.reload(api.main)
+
+
+# ------------------------------------------------------ representative
+
+
+@pytest.mark.parametrize("who,status", [(None, 401), ("nordsense", 403), ("greenloop", 403), ("admin", 200)])
+def test_representative_is_admin_only(client, as_, who, status):
+    """Only BSP staff may look up a company's account email, even the company itself gets 403."""
+    r = client.get("/companies/nordsense/representative", headers=as_(who))
+    assert r.status_code == status
+    if status == 200:
+        assert r.json() == {"company_id": "nordsense", "email": "demo@nordsense.example.com"}
+    else:
+        assert "demo@nordsense.example.com" not in r.text
+
+
+def test_representative_of_private_company_for_admin(client, as_):
+    r = client.get("/companies/greenloop/representative", headers=as_("admin"))
+    assert r.status_code == 200 and r.json()["email"] == "demo@greenloop.example.com"
+
+
+def test_representative_never_returns_password_or_hash(client, as_):
+    body = client.get("/companies/medtrace/representative", headers=as_("admin")).text
+    assert "password" not in body and "argon2" not in body and "demo-medtrace-2026" not in body
+
+
+def test_representative_unknown_company_404(client, as_):
+    assert client.get("/companies/nope/representative", headers=as_("admin")).status_code == 404
+
+
+def test_representative_company_without_account_404(client, as_, db_url):
+    conn = database.connect(db_url)
+    try:
+        conn.execute("DELETE FROM users WHERE company_id = 'medtrace'")
+        conn.commit()
+    finally:
+        conn.close()
+    r = client.get("/companies/medtrace/representative", headers=as_("admin"))
+    assert r.status_code == 404
+
+
+def test_company_user_403_does_not_reveal_unknown_company(client, as_):
+    assert client.get("/companies/nope/representative", headers=as_("nordsense")).status_code == 403

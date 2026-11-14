@@ -203,6 +203,8 @@ class RefreshResult(_Strict):
     stored: int = 0
     vinnova: int = 0
     removed: int = 0
+    kept: int = 0  # stored live items kept because their source returned nothing this time
+    from_snapshot: int = 0  # items loaded from the dated real snapshot, labelled cached_snapshot
     dropped_invalid: int = 0
     dropped_vinnova_not_live: int = 0
     dropped_duplicate: int = 0
@@ -244,6 +246,13 @@ class ChatResponse(_Strict):
     reply: NonEmpty
     action: ChatAction
     sources: list[Url] = Field(default_factory=list, description="Evidence and opportunity links the reply used.")
+
+
+class Representative(_Strict):
+    """GET /companies/{id}/representative (BSP admins only): where outreach about this company goes."""
+
+    company_id: Slug
+    email: NonEmpty
 
 
 class Role(str, Enum):

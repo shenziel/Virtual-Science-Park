@@ -3,7 +3,8 @@
 Checked server-side on every request. The rules:
 - Visitor: published profiles and their recommendations; all opportunities.
 - Company user: own profile in any state + published ones; edits only their own.
-- BSP admin: sees and edits everything.
+- BSP admin: sees and edits everything, and is the only one who can look up a
+  company's account email (for outreach).
 """
 
 from __future__ import annotations
@@ -13,6 +14,7 @@ from fastapi import HTTPException, status
 from contracts.models import Role, User, Visibility
 
 FORBIDDEN = HTTPException(status.HTTP_403_FORBIDDEN, "You can only change your own company's profile")
+ADMIN_ONLY = HTTPException(status.HTTP_403_FORBIDDEN, "Only Blue Science Park staff can do this")
 
 
 def not_found(what: str = "Company") -> HTTPException:
@@ -37,3 +39,9 @@ def require_edit(user: User, company_id: str) -> None:
         return
     if user.company_id != company_id:
         raise FORBIDDEN
+
+
+def require_admin(user: User) -> None:
+    """403 unless the user is a BSP admin. Checked before any lookup, so it reveals nothing."""
+    if user.role != Role.admin:
+        raise ADMIN_ONLY

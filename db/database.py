@@ -266,6 +266,15 @@ def get_user(conn: sqlite3.Connection, user_id: str) -> User:
     return _user_from_row(r)
 
 
+def get_company_account_email(conn: sqlite3.Connection, company_id: str) -> str:
+    """The email of the company's account (the first one, if there are several)."""
+    r = conn.execute("SELECT email FROM users WHERE company_id=? AND role=? ORDER BY id LIMIT 1",
+                     (company_id, Role.company.value)).fetchone()
+    if r is None:
+        raise NotFound(company_id)
+    return r["email"]
+
+
 def get_user_credentials(conn: sqlite3.Connection, email: str) -> tuple[User, str] | None:
     """For login only: the user and their password hash. Never send the hash anywhere."""
     r = conn.execute("SELECT * FROM users WHERE email=?", (email,)).fetchone()

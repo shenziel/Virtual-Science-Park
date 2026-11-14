@@ -29,6 +29,7 @@ unknown or expired token on an endpoint that needs login returns `401` with `WWW
 | POST | `/companies/{id}/claims` | `ClaimCreate` → `Claim` (201) | 401 | own only, else 403 | all |
 | PATCH | `/companies/{id}/visibility` | `VisibilityPatch` → `Profile` | 401 | own only, else 403 | all |
 | GET | `/companies/{id}/recommendations` | – → `[Recommendation]`, best first | published only | own or published | all |
+| GET | `/companies/{id}/representative` | – → `Representative {company_id, email}` (`404` unknown company or no account) | 401 | 403 (own company too) | all |
 | GET | `/opportunities` | – → `[Opportunity]` | all | all | all |
 | POST | `/feedback` | `FeedbackIn` → `204` (`404` unknown opportunity) | 401 | own company (from session) | 403 (no company) |
 | POST | `/chat` | `ChatRequest` → `ChatResponse` | 401 | own company (from session) | 403 (no company) |
@@ -49,10 +50,11 @@ Writes check permission first: a company user writing to any other `company_id` 
 ## Rules the server enforces
 
 - `company_id` for `/chat` and `/feedback` comes from the **session only**. It never comes from the request body or from model output.
+- `GET /companies/{id}/representative` is for BSP staff preparing outreach: it returns the company account's email and nothing else (never a password or hash). The admin check runs before the lookup, so a `403` reveals nothing about the company.
 - Every claim written through `PATCH` or `POST` gets `kind = user_confirmed` and `confidence = 1.0`, with `retrieved_at` set to today. On a user-written claim, `evidence_url` and `snippet` are null.
 - When the profiler runs again, it never overwrites or deletes a `user_confirmed` claim.
 - Agent output is saved with `visibility = private`.
 - After a claim edit or a new claim, the server re-runs the matcher for that company, so `GET /companies/{id}/recommendations` reflects the change right away. If the matcher fails, the edit is kept and the previous ranking stays.
-- Opportunities come from the monitors: at startup (unless `OPPORTUNITY_REFRESH=off`) and on admin refresh, the server fetches them, validates each against the contract, and stores the result as the complete set, replacing seeded mock opportunities. `is_simulated` and `cached_snapshot` are kept as the monitors set them. Vinnova items must be live: snapshot or simulated Vinnova items are dropped, and if the live fetch fails Vinnova stays empty (logged), with no fallback to mock data. Every company is re-ranked afterwards. Opportunities that disappear at the source are deleted together with their recommendations and feedback.
+- Opportunities come from the monitors: at startup (unless `OPPORTUNITY_REFRESH=off`) and on admin refresh, the server fetches them, validates each against the contract, and stores the result as the complete set, replacing seeded mock opportunities. `is_simulated` and `cached_snapshot` are kept as the monitors set them. Vinnova items from the monitors must be live: snapshot or simulated Vinnova items they return are dropped, and there is never a fallback to mock data. Every company is re-ranked afterwards. Opportunities that disappear at the source are deleted together with their recommendations and feedback. But when a source returns nothing at all (a timeout or an outage), its stored items are kept rather than deleted, as long as they are live (not simulated or cached) and their deadline or event date hasn't passed; `RefreshResult.kept` counts them. If such a source has nothing stored either (a fresh database), its current items are loaded from the dated real snapshot `fixtures/opportunities.json` (written by `db.ingest`), labelled `cached_snapshot: true`, and counted in `RefreshResult.from_snapshot`; simulated items never come from it. `OPPORTUNITY_FALLBACK=off` disables this.
 - CORS allows only the origins in `UI_ORIGIN` (comma-separated), with the `Authorization` and `Content-Type` headers. No cookies are used.
 - Errors return FastAPI's default `{"detail": ...}` with codes `401`, `403`, `404` or `422`.
