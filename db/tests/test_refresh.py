@@ -28,6 +28,12 @@ BSP_CACHED = opp("bsp-cached-1", source="Blue Science Park", cached_snapshot=Tru
 BSP_SIMULATED = opp("bsp-sim-1", source="Blue Science Park", is_simulated=True)
 
 
+@pytest.fixture(autouse=True)
+def no_default_fallback(monkeypatch):
+    """Tests opt in to the snapshot fallback explicitly (fallback_fn=...)."""
+    monkeypatch.setenv("OPPORTUNITY_FALLBACK", "off")
+
+
 @pytest.fixture
 def conn():
     c = database.connect(":memory:")
@@ -194,3 +200,54 @@ def test_source_that_answers_still_removes_items_gone_at_the_source(conn):
     result = refresh_opportunities(conn, fetch_fn=lambda: [LIVE_VINNOVA])
     assert set(stored(conn)) == {"vinnova-live-1"}
     assert result.kept == 0 and result.removed == 1
+
+
+
+# ------------------------------------ fallback to the dated real snapshot
+
+SNAPSHOT = [opp("vinnova-snap-1"), opp("vinnova-snap-old", deadline=date(2020, 1, 1)),
+            opp("bsp-snap-1", source="Blue Science Park", deadline=None, event_date=date(2027, 3, 1))]
+
+
+def test_empty_database_falls_back_to_labelled_snapshot(conn, caplog):
+    def broken():
+        raise TimeoutError("vinnova read timed out")
+
+    with caplog.at_level(logging.WARNING, logger="db.refresh"):
+        result = refresh_opportunities(conn, fetch_fn=broken, fallback_fn=lambda: SNAPSHOT)
+    s = stored(conn)
+    assert set(s) == {"vinnova-snap-1", "bsp-snap-1"}  # the expired one is skipped
+    assert all(o.cached_snapshot and not o.is_simulated for o in s.values())
+    assert result.from_snapshot == 2
+    assert database.list_recommendations(conn, "nordsense")  # companies are ranked against it
+    assert "cached snapshot" in caplog.text
+
+
+def test_snapshot_only_fills_sources_that_returned_nothing(conn):
+    result = refresh_opportunities(conn, fetch_fn=lambda: [LIVE_VINNOVA], fallback_fn=lambda: SNAPSHOT)
+    assert set(stored(conn)) == {"vinnova-live-1", "bsp-snap-1"}
+    assert stored(conn)["vinnova-live-1"].cached_snapshot is False
+    assert result.from_snapshot == 1
+
+
+def test_kept_live_items_win_over_snapshot(conn):
+    refresh_opportunities(conn, fetch_fn=lambda: [LIVE_VINNOVA], fallback_fn=lambda: [])
+    result = refresh_opportunities(conn, fetch_fn=lambda: [], fallback_fn=lambda: SNAPSHOT)
+    s = stored(conn)
+    assert "vinnova-live-1" in s and "vinnova-snap-1" not in s  # Vinnova still has its kept live item
+    assert "bsp-snap-1" in s and result.kept == 1 and result.from_snapshot == 1
+
+
+def test_simulated_items_never_come_from_the_snapshot(conn):
+    result = refresh_opportunities(conn, fetch_fn=lambda: [], fallback_fn=lambda: [BSP_SIMULATED])
+    assert stored(conn) == {} and result.from_snapshot == 0
+
+
+def test_default_snapshot_is_the_real_fixtures_file(monkeypatch):
+    from db.refresh import load_snapshot
+
+    monkeypatch.setenv("OPPORTUNITY_FALLBACK", "on")
+    snap = load_snapshot()
+    assert snap and all(o.cached_snapshot and not o.is_simulated for o in snap)
+    monkeypatch.setenv("OPPORTUNITY_FALLBACK", "off")
+    assert load_snapshot() == []

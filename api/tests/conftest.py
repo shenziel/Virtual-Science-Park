@@ -12,6 +12,7 @@ def db_url(tmp_path, monkeypatch):
     monkeypatch.setenv("SEED_DIR", str(MOCK))
     # No network in tests: refresh tests enable it explicitly with fake monitors.
     monkeypatch.setenv("OPPORTUNITY_REFRESH", "off")
+    monkeypatch.setenv("OPPORTUNITY_FALLBACK", "off")
     # Never call a real model from tests, even if your .env holds keys.
     for key in ("CHAT_API_KEY", "MATCHER_API_KEY", "MODEL_API_KEY", "MONITOR_API_KEY",
                 "CHAT_BASE_URL", "CHAT_MODEL"):

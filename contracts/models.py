@@ -204,6 +204,7 @@ class RefreshResult(_Strict):
     vinnova: int = 0
     removed: int = 0
     kept: int = 0  # stored live items kept because their source returned nothing this time
+    from_snapshot: int = 0  # items loaded from the dated real snapshot, labelled cached_snapshot
     dropped_invalid: int = 0
     dropped_vinnova_not_live: int = 0
     dropped_duplicate: int = 0
