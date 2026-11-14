@@ -55,6 +55,14 @@ CREATE TABLE IF NOT EXISTS users (
     company_id    TEXT REFERENCES companies(company_id) ON DELETE CASCADE
 );
 
+-- Bearer-token logins. Only a SHA-256 hash of each token is stored.
+CREATE TABLE IF NOT EXISTS sessions (
+    token_hash TEXT PRIMARY KEY,
+    user_id    TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    created_at TEXT NOT NULL,
+    expires_at TEXT NOT NULL
+);
+
 CREATE TABLE IF NOT EXISTS feedback (
     id             INTEGER PRIMARY KEY AUTOINCREMENT,
     company_id     TEXT NOT NULL REFERENCES companies(company_id) ON DELETE CASCADE,

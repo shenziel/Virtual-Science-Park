@@ -28,7 +28,7 @@ Anything not in this list is out of scope. Don't build it unless Backend 1 says 
 ## 2. Stack
 
 - **Backend:** Python · FastAPI · SQLite (Postgres optional) · Pydantic for all schema validation · pytest.
-- **Frontend:** TypeScript + React, built with **Lovable** and synced to GitHub (repo: ________).
+- **Frontend:** TypeScript + React, built with **Lovable** and synced to its own GitHub repo: https://github.com/adCBueno/virtual-blue-science-park. It stays a separate repo (Lovable syncs a whole repository, not a subfolder). Nothing from it is copied into this repo; UI work happens in Lovable or that repo only.
 - Docker Compose only if time allows (it's first on the cut list); it runs the backend only.
 
 The model runtime is decided: **`MODEL_RUNTIME = api` (OpenRouter)**. Models run on OpenRouter (`https://openrouter.ai/api/v1`, OpenAI-compatible) so nothing heavy runs locally. Each agent has its own key and model, with the variable names in `.env.example`:

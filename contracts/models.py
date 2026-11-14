@@ -12,7 +12,7 @@ from __future__ import annotations
 
 from datetime import date, datetime
 from enum import Enum
-from typing import Annotated
+from typing import Annotated, Literal
 
 from pydantic import BaseModel, ConfigDict, Field, StringConstraints, model_validator
 
@@ -80,6 +80,15 @@ class Claim(_Strict):
 class Visibility(str, Enum):
     private = "private"  # owner + BSP admins only
     published = "published"  # everyone
+
+
+class CompanySummary(_Strict):
+    """One row of GET /companies."""
+
+    company_id: Slug
+    name: NonEmpty
+    visibility: Visibility
+    is_simulated: bool = False
 
 
 class Profile(_Strict):
@@ -227,6 +236,15 @@ class Role(str, Enum):
 class LoginRequest(_Strict):
     email: NonEmpty
     password: NonEmpty
+
+
+class LoginResponse(_Strict):
+    """POST /auth/login. Send `Authorization: Bearer <access_token>` on every other request."""
+
+    access_token: NonEmpty
+    token_type: Literal["bearer"] = "bearer"
+    expires_at: datetime
+    user: User
 
 
 class User(_Strict):

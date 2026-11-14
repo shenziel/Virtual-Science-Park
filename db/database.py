@@ -7,10 +7,12 @@ Permission checks are NOT done here: `api/` checks the session before calling.
 
 from __future__ import annotations
 
+import hashlib
 import json
 import os
+import secrets
 import sqlite3
-from datetime import date, datetime, timezone
+from datetime import date, datetime, timedelta, timezone
 from pathlib import Path
 
 from contracts.models import (
@@ -268,3 +270,50 @@ def get_user_credentials(conn: sqlite3.Connection, email: str) -> tuple[User, st
     """For login only: the user and their password hash. Never send the hash anywhere."""
     r = conn.execute("SELECT * FROM users WHERE email=?", (email,)).fetchone()
     return (_user_from_row(r), r["password_hash"]) if r else None
+
+
+# ------------------------------------------------------------------ sessions
+# Bearer tokens are random and opaque. Only their SHA-256 hash is stored, so a
+# copy of the database cannot be used to log in.
+
+
+def _token_hash(token: str) -> str:
+    return hashlib.sha256(token.encode("utf-8")).hexdigest()
+
+
+def create_session(conn: sqlite3.Connection, user_id: str, ttl: timedelta) -> tuple[str, datetime]:
+    """Start a login for `user_id`. Returns the raw token (shown once) and its expiry."""
+    token = secrets.token_urlsafe(32)
+    now = datetime.now(timezone.utc)
+    expires = now + ttl
+    with conn:
+        conn.execute(
+            "INSERT INTO sessions (token_hash, user_id, created_at, expires_at) VALUES (?,?,?,?)",
+            (_token_hash(token), user_id, now.isoformat(), expires.isoformat()),
+        )
+    return token, expires
+
+
+def get_session_user(conn: sqlite3.Connection, token: str) -> User | None:
+    """The user a token belongs to, or None if it is unknown or expired."""
+    row = conn.execute(
+        "SELECT user_id, expires_at FROM sessions WHERE token_hash=?", (_token_hash(token),)
+    ).fetchone()
+    if row is None:
+        return None
+    if datetime.fromisoformat(row["expires_at"]) <= datetime.now(timezone.utc):
+        delete_session(conn, token)
+        return None
+    try:
+        return get_user(conn, row["user_id"])
+    except NotFound:
+        return None
+
+
+def delete_session(conn: sqlite3.Connection, token: str) -> None:
+    with conn:
+        conn.execute("DELETE FROM sessions WHERE token_hash=?", (_token_hash(token),))
+
+
+def count_users(conn: sqlite3.Connection) -> int:
+    return conn.execute("SELECT COUNT(*) FROM users").fetchone()[0]

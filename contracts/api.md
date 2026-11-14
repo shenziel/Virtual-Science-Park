@@ -5,29 +5,38 @@ Request and response bodies are the models in `contracts/models.py`. The JSON Sc
 
 ## Auth
 
-Login sets an HTTP-only session cookie. Send it on every request. A request without a session counts as a **visitor**.
+Login with email and password returns a **bearer token**. Send it on every other request as
+`Authorization: Bearer <access_token>`. A request without a token counts as a **visitor**; a missing,
+unknown or expired token on an endpoint that needs login returns `401` with `WWW-Authenticate: Bearer`.
 
 | Method | Path | Body → Response | Who |
 |---|---|---|---|
-| POST | `/auth/login` | `LoginRequest` → `User` | anyone |
-| POST | `/auth/logout` | – → `204` | logged in |
-| GET | `/auth/me` | – → `User` | logged in (`401` otherwise) |
+| POST | `/auth/login` | `LoginRequest` → `LoginResponse` | anyone (`401` on wrong email or password, same message for both) |
+| POST | `/auth/logout` | – → `204` | logged in; the token stops working immediately |
+| GET | `/auth/me` | – → `User` | logged in |
+
+- Tokens are opaque and expire after `SESSION_TTL_HOURS` (default 12). Log in again to get a new one.
+- The server stores only a hash of each token. Passwords and hashes are never returned or logged.
+- Keep the token in memory or `sessionStorage` in the UI, never in a URL.
 
 ## Companies and profiles
 
 | Method | Path | Body → Response | Visitor | Company user | Admin |
 |---|---|---|---|---|---|
-| GET | `/companies` | – → `[{company_id, name, visibility}]` | published only | published + own | all |
+| GET | `/companies` | – → `[CompanySummary]` | published only | published + own | all |
 | GET | `/companies/{id}/profile` | – → `Profile` | published only | own or published | all |
 | PATCH | `/companies/{id}/claims/{claim_id}` | `ClaimPatch` → `Claim` | 401 | own only, else 403 | all |
 | POST | `/companies/{id}/claims` | `ClaimCreate` → `Claim` (201) | 401 | own only, else 403 | all |
 | PATCH | `/companies/{id}/visibility` | `VisibilityPatch` → `Profile` | 401 | own only, else 403 | all |
 | GET | `/companies/{id}/recommendations` | – → `[Recommendation]`, best first | published only | own or published | all |
 | GET | `/opportunities` | – → `[Opportunity]` | all | all | all |
-| POST | `/feedback` | `FeedbackIn` → `204` | 401 | own company (from session) | 403 (no company) |
+| POST | `/feedback` | `FeedbackIn` → `204` (`404` unknown opportunity) | 401 | own company (from session) | 403 (no company) |
 | POST | `/chat` | `ChatRequest` → `ChatResponse` | 401 | own company (from session) | 403 (no company) |
 
 A private profile returns `404` to anyone who can't see it, not `403`, so the response doesn't reveal that the company exists.
+Writes check permission first: a company user writing to any other `company_id` gets `403`, whether or not that company exists.
+
+`/chat` is not built yet.
 
 ## Rules the server enforces
 
@@ -35,4 +44,6 @@ A private profile returns `404` to anyone who can't see it, not `403`, so the re
 - Every claim written through `PATCH` or `POST` gets `kind = user_confirmed` and `confidence = 1.0`, with `retrieved_at` set to today. On a user-written claim, `evidence_url` and `snippet` are null.
 - When the profiler runs again, it never overwrites or deletes a `user_confirmed` claim.
 - Agent output is saved with `visibility = private`.
+- After a claim edit or a new claim, the server re-runs the matcher for that company, so `GET /companies/{id}/recommendations` reflects the change right away. If the matcher fails, the edit is kept and the previous ranking stays.
+- CORS allows only the origins in `UI_ORIGIN` (comma-separated), with the `Authorization` and `Content-Type` headers. No cookies are used.
 - Errors return FastAPI's default `{"detail": ...}` with codes `401`, `403`, `404` or `422`.
