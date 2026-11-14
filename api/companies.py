@@ -40,7 +40,8 @@ def rematch(conn: sqlite3.Connection, company_id: str) -> None:
     """Re-rank a company's opportunities after its profile changed.
 
     A failure here must not undo the user's edit: the old ranking stays and the
-    error is logged.
+    error is logged. The log line never includes request data such as
+    `company_id`, so a crafted URL cannot inject fake log entries.
     """
     try:
         from agents.matcher import match
@@ -49,7 +50,7 @@ def rematch(conn: sqlite3.Connection, company_id: str) -> None:
         recs = match(profile, database.list_opportunities(conn))
         database.replace_recommendations(conn, company_id, recs)
     except Exception:  # noqa: BLE001 - keep the edit, report the matcher problem
-        log.exception("re-matching %s failed; keeping the previous ranking", company_id)
+        log.exception("re-matching after a profile edit failed; keeping the previous ranking")
 
 
 @router.get("", response_model=list[CompanySummary])
