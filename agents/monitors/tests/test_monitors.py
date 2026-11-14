@@ -5,7 +5,7 @@ Validates that:
 - Funding monitor (Vinnova) produces valid Opportunity objects of type 'funding'
 - Events monitor (Blue Science Park) produces valid Opportunity objects of type 'event'
 - Opportunities missing live URLs or dates are dropped (never guessed)
-- Offline fallback to dated, labelled cached snapshots works seamlessly
+- Offline fetches never substitute unverified opportunity snapshots
 - Aggregated fetch_all_opportunities() returns valid opportunities adhering to contracts/models.py
 """
 from __future__ import annotations
@@ -186,43 +186,23 @@ class TestBSPEventsMonitor:
             assert opp.event_date is not None
             Opportunity.model_validate(opp.model_dump())
 
-    def test_fallback_to_snapshot(self):
+    def test_no_dead_event_snapshot_is_served(self):
         from agents.monitors.bsp_events import BSPEventsMonitor
 
         monitor = BSPEventsMonitor()
         opportunities = monitor.load_cached_snapshot()
-        assert len(opportunities) > 0
-        for opp in opportunities:
-            assert opp.type == OpportunityType.event
-            assert opp.cached_snapshot is True
-            assert opp.url.startswith("http")
-            assert opp.deadline or opp.published or opp.event_date
-            Opportunity.model_validate(opp.model_dump())
+        assert opportunities == []
 
 
 class TestFetchAllOpportunities:
     """Checks end-to-end integration of all monitors."""
 
-    def test_cached_fetch_returns_events_without_mock_funding(self):
+    def test_cached_fetch_does_not_return_dead_or_mock_sources(self):
         from agents.monitors import fetch_all_opportunities
 
-        # The event source may use its labelled snapshot; Vinnova must not.
+        # There are no verified offline opportunity snapshots.
         opportunities = fetch_all_opportunities(force_cache=True)
-        assert len(opportunities) >= 2
-
-        types = {opp.type for opp in opportunities}
-        assert OpportunityType.event in types, "Must contain event opportunities"
-        assert OpportunityType.funding not in types, "Must not include fabricated cached funding"
-
-        for opp in opportunities:
-            # Must strictly validate against contract schema
-            Opportunity.model_validate(opp.model_dump())
-            assert opp.id
-            assert opp.title
-            assert opp.url
-            assert opp.source
-            assert opp.retrieved_at is not None
-            assert opp.cached_snapshot is True
+        assert opportunities == []
 
     def test_unique_ids(self):
         from agents.monitors import fetch_all_opportunities

@@ -9,6 +9,7 @@ import logging
 import re
 from datetime import date
 from typing import Any, List
+from urllib.parse import urlparse
 
 from contracts.models import Opportunity, OpportunityType
 
@@ -89,6 +90,12 @@ class VinnovaFundingMonitor(BaseMonitor):
             if not call or call.get("Publik") not in (1, "1", True):
                 continue
 
+            landing_url = self._public_call_url(round_item, call)
+            if not landing_url:
+                # Never expose the raw JSON API or a submission form as the
+                # human-facing source link. Drop calls without a public page.
+                continue
+
             deadline = round_item.get("Stangningsdatum")
             parsed_deadline = sanitize_opportunity_data(
                 {
@@ -103,7 +110,7 @@ class VinnovaFundingMonitor(BaseMonitor):
                         or call.get("TitelEngelska")
                         or call.get("Titel")
                     ),
-                    "url": f"https://data.vinnova.se/api/ansokningsomgangar/{round_item.get('Diarienummer')}",
+                    "url": landing_url,
                     "published": call.get("Publiceringsdatum"),
                     "deadline": deadline,
                     "audience": self._eligibility_text(round_item),
@@ -128,6 +135,47 @@ class VinnovaFundingMonitor(BaseMonitor):
                 opportunities.append(parsed_deadline)
 
         return opportunities
+
+    @staticmethod
+    def _public_call_url(*records: dict[str, Any]) -> str | None:
+        """Choose a public call information page from Vinnova's source links."""
+        candidates: list[tuple[int, str]] = []
+        for record in records:
+            links = record.get("LankLista") or []
+            if not isinstance(links, list):
+                continue
+            for item in links:
+                if not isinstance(item, dict):
+                    continue
+                url = str(item.get("URL") or "").strip()
+                label = str(item.get("Beskrivning") or "").strip().lower()
+                parsed = urlparse(url)
+                host = (parsed.hostname or "").lower()
+                if parsed.scheme not in {"http", "https"} or not host:
+                    continue
+                if host == "data.vinnova.se" or host == "ansok.vinnova.se":
+                    continue
+                if "/api/" in parsed.path.lower() or "ansök" in label or "ansok" in label or "apply" in label:
+                    continue
+
+                # Prefer call-specific source pages, then Vinnova's readable
+                # information page, over generic homepages.
+                score = 0
+                path_and_label = f"{parsed.path} {label}".lower()
+                if any(
+                    word in path_and_label
+                    for word in ("call", "calls", "utlysning", "utlysningar", "funding")
+                ):
+                    score += 20
+                if host == "www.vinnova.se" or host == "vinnova.se":
+                    score += 8
+                if any(word in label for word in ("webbplats", "website")):
+                    score += 1
+                candidates.append((score, url))
+
+        if not candidates:
+            return None
+        return max(candidates, key=lambda candidate: candidate[0])[1]
 
     @staticmethod
     def _eligibility_text(round_item: dict[str, Any]) -> str | None:
