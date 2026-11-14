@@ -3,3 +3,7 @@
 **/__pycache__
 **/.pytest_cache
 *.db
+# Agent runtime caches and local tool files stay out of the image
+# (the profiler caches to /data via CACHE_DIR at runtime).
+agents/**/cache
+**/.ua
