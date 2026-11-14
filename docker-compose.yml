@@ -35,6 +35,9 @@ services:
       interval: 10s
       timeout: 3s
       retries: 5
+      # Startup refreshes opportunities from the live sources first (about a
+      # minute, Vinnova is slow); failed checks in this window don't count.
+      start_period: 180s
 
   # Frontend (TypeScript/React built with Lovable), published as an image
   # from https://github.com/adCBueno/virtual-blue-science-park.
