@@ -27,11 +27,21 @@ Anything not in this list is out of scope. Don't build it unless Backend 1 says 
 
 ## 2. Stack
 
-Python · FastAPI · SQLite (Postgres optional) · Streamlit UI · Pydantic for all schema validation · pytest · Docker Compose only if time allows (it's first on the cut list).
+- **Backend:** Python · FastAPI · SQLite (Postgres optional) · Pydantic for all schema validation · pytest.
+- **Frontend:** TypeScript + React, built with **Lovable** and synced to GitHub (repo: ________).
+- Docker Compose only if time allows (it's first on the cut list); it runs the backend only.
 
 The model runtime is **decided at kickoff**: an API key or a local model via Ollama. Record the decision here: `MODEL_RUNTIME = ________`. All LLM calls read the model and key from environment variables. Never hard-code them.
 
-Don't add other languages, frameworks, databases or paid services.
+Don't add other languages (Python for the backend, TypeScript for the frontend), frameworks, databases or paid services.
+
+### Frontend rules (Lovable)
+- The UI talks **only** to the FastAPI API in `contracts/api.md`. Don't enable Supabase, Lovable Cloud, or any Lovable-generated backend, auth or database: all data, login and permissions live in FastAPI.
+- Read the API base URL from `VITE_API_URL`. Never hard-code it.
+- Generate TypeScript types from the API's `/openapi.json` (or `contracts/*.json`). Don't hand-write types that can drift from `contracts/`.
+- Show the simulated/cached badge wherever `is_simulated` or `cached_snapshot` is true, and the stated/inferred/user_confirmed label and evidence link on every claim.
+- Paste §1, §5 (labels), §6 and these rules into the Lovable project's Knowledge, so Lovable's own AI follows them.
+- Backend 1 allows the UI's origin through CORS (`UI_ORIGIN` env var), and nothing else.
 
 ---
 
@@ -42,8 +52,8 @@ Don't add other languages, frameworks, databases or paid services.
 | **Backend 1** | Lead, integrator, API + chat guardrail | `contracts/`, `fixtures/`, `api/` (incl. `api/chat/`), `db/`, `docker-compose.yml`, `requirements.in`, `requirements.txt`, `AGENTS.md`, `CLAUDE.md` |
 | **Backend 2** | Profiler agent | `agents/profiler/` |
 | **Backend 3** | Monitors + matcher | `agents/monitors/`, `agents/matcher/` |
-| **UI 1** | Profile and findings UI | `ui/profile/`, `ui/dashboard/`, `ui/app.py` (Streamlit entry point) |
-| **UI 2** | Chat UI, demo and pitch | `ui/chat/`, `pitch/`, `README.md` |
+| **UI 1** | Profile and findings UI | Lovable project: app shell, routing, login, profile and editor, dashboard pages |
+| **UI 2** | Chat UI, demo and pitch | Lovable project: chat page and its components; `pitch/`, `README.md` |
 
 Fill in names here: Backend 1 ____ · Backend 2 ____ · Backend 3 ____ · UI 1 ____ · UI 2 ____
 
@@ -51,7 +61,7 @@ Rules:
 - **Never edit a file outside your role's folders.** If a change is needed elsewhere, write down what's needed and stop, so the human can ask the owner.
 - **Never change `contracts/`** unless you are Backend 1. Schema changes are requested in the team chat, and Backend 1 decides within 15 minutes.
 - New dependencies: tell Backend 1, who adds them to `requirements.in` and regenerates `requirements.txt`.
-- UI 2 needs a page in the Streamlit app: UI 1 adds the link in `ui/app.py`, and UI 2 only writes the code under `ui/chat/`.
+- UI 1 and UI 2 share one Lovable project: UI 1 owns the shell and routing and adds the chat route; UI 2 only edits the chat page and its components. Agree in the team chat before either of you prompts Lovable to change shared files, because Lovable may rewrite them.
 - Tests live inside the owner's folder (e.g. `agents/profiler/tests/`).
 - Shared helpers: don't create a shared `utils/` folder. Duplicate a small helper rather than editing someone else's code.
 
@@ -141,7 +151,7 @@ The canonical files are in `contracts/`. The summaries below are for orientation
 | **Blue Science Park admin** (one account per employee) | Everything | Every profile | Every profile |
 
 - Login uses email and password. Passwords are hashed with bcrypt or argon2. Never log, return or commit passwords or hashes.
-- Authorization is checked **server-side in `api/` on every request**. Hiding a button in `ui/` doesn't count as access control.
+- Authorization is checked **server-side in `api/` on every request**. Hiding a button in the UI doesn't count as access control.
 - A company user who writes to another `company_id` gets `403`. Every write endpoint has a pytest case for this.
 - Agent output starts as `private`. Only a company user or a BSP admin can publish it.
 - Seed demo accounts go in `fixtures/` with throwaway passwords, documented in the README. Never use real credentials.
