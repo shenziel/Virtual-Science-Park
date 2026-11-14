@@ -1,0 +1,3 @@
+# Fetched pages and generated profiles. Cached so the demo works offline.
+cache/
+__pycache__/
