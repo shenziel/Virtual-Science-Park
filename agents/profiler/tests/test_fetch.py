@@ -98,3 +98,62 @@ def test_load_snapshot_is_labelled_cached(tmp_path):
     assert page.cached is True
     assert "cached snapshot" in page.note
     assert page.retrieved_at == date.today()
+
+
+# -- untrusted URLs and paths (path traversal) ------------------------------
+
+
+@pytest.mark.parametrize(
+    "url",
+    [
+        "file:///etc/passwd",
+        "data:text/html,<p>x</p>",
+        "ftp://example.com/about",
+        "javascript:alert(1)",
+        "https://",
+        "not a url",
+    ],
+)
+def test_non_http_urls_are_refused_before_any_request(tmp_path, url):
+    transport = FakeTransport()
+    fetcher = CachedFetcher(
+        cache_dir=tmp_path / "pages", transport=transport, min_interval=0.0
+    )
+    with pytest.raises(FetchError):
+        fetcher.fetch(url)
+    assert transport.calls == []  # nothing was fetched, nothing was cached
+
+
+def test_cache_file_names_are_hashes_and_never_escape_the_cache_dir(tmp_path, transport):
+    cache = tmp_path / "pages"
+    fetcher = CachedFetcher(cache_dir=cache, transport=transport, min_interval=0.0)
+    traversal = "https://nordsense.example/../../../../etc/passwd"
+    transport.pages[traversal] = PAGE_HTML
+
+    fetcher.fetch(traversal)
+
+    names = sorted(p.name for p in cache.iterdir())
+    assert len(names) == 2
+    assert all(name.endswith((".html", ".json")) for name in names)
+    assert all(len(name.split(".")[0]) == 32 for name in names)  # a hash, not a path
+    assert not (tmp_path / "etc").exists()
+
+
+def test_snapshot_must_be_an_existing_regular_file(tmp_path):
+    fetcher = CachedFetcher(
+        cache_dir=tmp_path / "pages", transport=FakeTransport(), min_interval=0.0
+    )
+    with pytest.raises(FetchError):
+        fetcher.load_snapshot(PAGE_URL, tmp_path / "missing.html")
+    with pytest.raises(FetchError):
+        fetcher.load_snapshot(PAGE_URL, tmp_path)  # a directory, not an HTML file
+
+
+def test_snapshot_url_is_also_checked(tmp_path):
+    snapshot = tmp_path / "nordsense.html"
+    snapshot.write_text(PAGE_HTML, encoding="utf-8")
+    fetcher = CachedFetcher(
+        cache_dir=tmp_path / "pages", transport=FakeTransport(), min_interval=0.0
+    )
+    with pytest.raises(FetchError):
+        fetcher.load_snapshot("file:///etc/passwd", snapshot)

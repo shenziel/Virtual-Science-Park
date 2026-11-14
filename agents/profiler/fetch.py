@@ -27,6 +27,7 @@ from urllib import request
 from urllib.parse import urlsplit
 
 from . import config
+from .paths import UnsafePathError, check_url, contained, readable_file
 
 logger = logging.getLogger(__name__)
 
@@ -35,6 +36,18 @@ Transport = Callable[[str, str, float], tuple[str, bytes]]
 
 class FetchError(RuntimeError):
     """The page could not be fetched and no cached copy exists."""
+
+
+def _require_http_url(url: str) -> None:
+    """Reject anything that is not an http(s) URL before it is used.
+
+    ``urllib`` would happily read ``file:///etc/passwd``, so the scheme check is
+    what keeps a URL from a model answer or a command line out of the filesystem.
+    """
+    try:
+        check_url(url)
+    except UnsafePathError as exc:
+        raise FetchError(str(exc)) from exc
 
 
 class RobotsDenied(FetchError):
@@ -104,7 +117,10 @@ class CachedFetcher:
         """Return the page, from cache when possible.
 
         Raises ``RobotsDenied`` or ``FetchError`` and never fabricates content.
+        ``url`` is untrusted (it can come from a model or the command line), so
+        it is checked before it reaches the transport or the cache.
         """
+        _require_http_url(url)
         html_path, meta_path = self._paths(url)
         if html_path.exists():
             return SourcePage(
@@ -141,21 +157,38 @@ class CachedFetcher:
         return SourcePage(url=url, html=html, retrieved_at=retrieved_at, cached=False)
 
     def load_snapshot(self, url: str, path: str | Path) -> SourcePage:
-        """Use HTML saved by hand (a site that blocks scraping or is all JavaScript)."""
-        html = Path(path).read_text(encoding="utf-8", errors="replace")
+        """Use HTML saved by hand (a site that blocks scraping or is all JavaScript).
+
+        ``path`` is named explicitly by the operator, so it is not joined to the
+        cache; it is resolved and must be a regular file. The snapshot is always
+        labelled as cached.
+        """
+        _require_http_url(url)
+        try:
+            snapshot = readable_file(path)
+        except UnsafePathError as exc:
+            raise FetchError(str(exc)) from exc
+        html = snapshot.read_text(encoding="utf-8", errors="replace")
         return SourcePage(
             url=url,
             html=html,
             retrieved_at=self.today(),
             cached=True,
-            note=f"cached snapshot from {Path(path).name}",
+            note=f"cached snapshot from {snapshot.name}",
         )
 
     # -- internals ---------------------------------------------------------
 
     def _paths(self, url: str) -> tuple[Path, Path]:
+        """Cache paths for a URL: a hash plus a containment check, never the URL."""
         digest = hashlib.sha256(url.encode("utf-8")).hexdigest()[:32]
-        return self.cache_dir / f"{digest}.html", self.cache_dir / f"{digest}.json"
+        try:
+            return (
+                contained(self.cache_dir, f"{digest}.html"),
+                contained(self.cache_dir, f"{digest}.json"),
+            )
+        except UnsafePathError as exc:  # pragma: no cover - defensive
+            raise FetchError(str(exc)) from exc
 
     def _cached_date(self, meta_path: Path) -> date:
         try:
@@ -180,12 +213,14 @@ class CachedFetcher:
     def _robots_allows(self, url: str) -> bool:
         from urllib import robotparser
 
-        parts = urlsplit(url)
+        # fetch() already checked this; repeating it keeps the method safe on its
+        # own and means the robots URL is built from a validated scheme and host.
+        parts = check_url(url)
         host = parts.netloc
         parser = self._robots.get(host)
         if parser is None:
             parser = robotparser.RobotFileParser()
-            robots_url = f"{parts.scheme}://{host}/robots.txt"
+            robots_url = f"{parts.scheme.lower()}://{host}/robots.txt"
             try:
                 self._throttle(robots_url)
                 _, body = self.transport(robots_url, self.user_agent, self.timeout)

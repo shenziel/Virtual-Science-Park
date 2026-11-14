@@ -33,13 +33,13 @@ from contracts.models import Claim, ClaimKind, Profile, Visibility
 
 from . import config
 from .extract import ExtractionError, ExtractionResult, Extractor
-from .fetch import CachedFetcher, SourcePage
+from .fetch import CachedFetcher, FetchError, SourcePage
 from .llm import default_client
+from .paths import UnsafePathError, check_url, contained, readable_file, writable_file
 
 logger = logging.getLogger(__name__)
 
 _SLUG = re.compile(r"^[a-z0-9][a-z0-9-]*$")
-_URL = re.compile(r"^https?://\S+$")
 
 
 class ProfilerAgent:
@@ -133,15 +133,24 @@ class ProfilerAgent:
         )
 
     def save(self, profile: Profile) -> Path:
-        """Validate once more, then cache the profile so the demo works offline."""
+        """Validate once more, then cache the profile so the demo works offline.
+
+        The file name comes from the validated ``company_id`` (a slug) and is
+        then checked to be inside the cache directory, so it cannot escape it.
+        """
         validated = Profile.model_validate(profile.model_dump())
-        path = self.cache_dir / f"{validated.company_id}.json"
+        path = contained(self.cache_dir, f"{validated.company_id}.json")
         path.write_text(validated.model_dump_json(indent=2), encoding="utf-8")
         return path
 
     def load(self, company_id: str) -> Profile | None:
-        """Return the cached profile for a company, validated, or ``None``."""
-        path = self.cache_dir / f"{company_id}.json"
+        """Return the cached profile for a company, validated, or ``None``.
+
+        ``company_id`` may come from a request body, so a value such as
+        ``../../etc/passwd`` must fail validation instead of naming a file.
+        """
+        _check_slug(company_id)
+        path = contained(self.cache_dir, f"{company_id}.json")
         if not path.exists():
             return None
         return Profile.model_validate_json(path.read_text(encoding="utf-8"))
@@ -204,8 +213,11 @@ def _check_slug(company_id: str) -> None:
 
 
 def _check_url(url: str) -> None:
-    if not _URL.match(url or ""):
-        raise ValueError(f"website must be an http(s) URL: {url!r}")
+    """Reject anything but an http(s) URL with a host."""
+    try:
+        check_url(url)
+    except UnsafePathError as exc:
+        raise ValueError(f"website must be an http(s) URL: {url!r}") from exc
 
 
 def _kept_visibility(existing: Profile | None) -> Visibility:
@@ -242,26 +254,35 @@ def main(argv: list[str] | None = None) -> int:
     )
 
     agent = ProfilerAgent()
-    existing = None
-    if args.existing:
-        existing = Profile.model_validate_json(Path(args.existing).read_text(encoding="utf-8"))
+    try:
+        existing = None
+        if args.existing:
+            source = readable_file(args.existing)
+            existing = Profile.model_validate_json(source.read_text(encoding="utf-8"))
+        html_path = readable_file(args.html) if args.html else None
 
-    if args.html:
-        profile = agent.profile_from_snapshot(
-            args.company_id, args.name, args.website, args.html, existing=existing
-        )
-    else:
-        profile = agent.profile_company(
-            args.company_id, args.name, args.website, existing=existing
-        )
+        if html_path:
+            profile = agent.profile_from_snapshot(
+                args.company_id, args.name, args.website, html_path, existing=existing
+            )
+        else:
+            profile = agent.profile_company(
+                args.company_id, args.name, args.website, existing=existing
+            )
 
-    path = agent.save(profile)
-    payload = profile.model_dump_json(indent=2)
-    if args.out:
-        Path(args.out).write_text(payload, encoding="utf-8")
-        print(f"wrote {args.out}", file=sys.stderr)
-    else:
-        print(payload)
+        path = agent.save(profile)
+        payload = profile.model_dump_json(indent=2)
+        if args.out:
+            target = writable_file(args.out)
+            target.write_text(payload, encoding="utf-8")
+            print(f"wrote {target}", file=sys.stderr)
+        else:
+            print(payload)
+    except (ValueError, OSError, FetchError, ExtractionError) as exc:
+        # A bad URL or path is an operator mistake, not a crash: say what is
+        # wrong and exit non-zero without a traceback.
+        print(f"error: {exc}", file=sys.stderr)
+        return 2
     print(f"cached {path}", file=sys.stderr)
     return 0
 

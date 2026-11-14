@@ -129,8 +129,23 @@ def test_load_returns_none_for_an_unknown_company(tmp_path):
 
 
 @pytest.mark.parametrize(
+    "company_id",
+    ["../../etc/passwd", "..", "a/../../escape", "/etc/passwd", "nested/file"],
+)
+def test_load_refuses_a_company_id_that_could_leave_the_cache(tmp_path, company_id):
+    with pytest.raises(ValueError):
+        make_agent(tmp_path).load(company_id)
+
+
+@pytest.mark.parametrize(
     ("company_id", "website"),
-    [("Not A Slug", PAGE_URL), ("nordsense", "ftp://nordsense.example")],
+    [
+        ("Not A Slug", PAGE_URL),
+        ("nordsense", "ftp://nordsense.example"),
+        ("nordsense", "file:///etc/passwd"),
+        ("nordsense", "data:text/html,<p>x</p>"),
+        ("nordsense", "https://"),
+    ],
 )
 def test_bad_inputs_are_rejected(tmp_path, company_id, website):
     with pytest.raises(ValueError):
@@ -150,3 +165,53 @@ def test_llm_failure_raises_when_the_fallback_is_disabled(tmp_path):
     agent = make_agent(tmp_path, llm=llm, fallback_on_llm_error=False)
     with pytest.raises(ExtractionError):
         agent.profile_company(COMPANY_ID, NAME, PAGE_URL)
+
+
+# -- CLI boundary -----------------------------------------------------------
+
+
+def test_cli_refuses_a_non_http_website_without_a_traceback(tmp_path, monkeypatch, capsys):
+    from agents.profiler import config
+    from agents.profiler.profiler import main
+
+    monkeypatch.setattr(config, "CACHE_DIR", tmp_path / "profiles")
+    monkeypatch.setattr(config, "PAGE_CACHE_DIR", tmp_path / "pages")
+
+    code = main(
+        [
+            "--company-id", "nordsense",
+            "--name", NAME,
+            "--website", "file:///etc/passwd",
+            "--out", str(tmp_path / "out.json"),
+        ]
+    )
+
+    assert code == 2
+    captured = capsys.readouterr()
+    assert captured.err.startswith("error:")
+    assert "http(s)" in captured.err
+    assert not (tmp_path / "out.json").exists()
+
+
+def test_cli_refuses_a_traversing_company_id(tmp_path, monkeypatch, capsys):
+    from agents.profiler import config
+    from agents.profiler.profiler import main
+
+    monkeypatch.setattr(config, "CACHE_DIR", tmp_path / "profiles")
+    monkeypatch.setattr(config, "PAGE_CACHE_DIR", tmp_path / "pages")
+
+    snapshot = tmp_path / "page.html"
+    snapshot.write_text(PAGE_HTML, encoding="utf-8")
+
+    code = main(
+        [
+            "--company-id", "../../etc/passwd",
+            "--name", NAME,
+            "--website", PAGE_URL,
+            "--html", str(snapshot),
+        ]
+    )
+
+    assert code == 2
+    assert "error:" in capsys.readouterr().err
+    assert not (tmp_path / "etc").exists()

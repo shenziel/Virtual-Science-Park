@@ -56,9 +56,26 @@ and `fallback_on_llm_error=False`.
 | `user_confirmed` claims survive a re-run and are never overwritten | `profiler.py` |
 | Output validated as `contracts.models.Profile` before saving | `profiler.py` |
 | A re-run never un-publishes a profile | `profiler.py` |
+| Only `http(s)` URLs are fetched: `file://`, `data:`, `ftp:` are refused before any request | `paths.py`, `fetch.py` |
+| Cache file names are hashes, and the resolved path must stay inside the cache directory | `paths.py`, `fetch.py` |
+| `load(company_id)` validates the slug and the path, so `../` cannot name a file | `profiler.py` |
+| `--html` / `--existing` must be existing regular files; `--out` needs a real directory | `paths.py` |
 
 Dropped claims are logged with the reason. Nothing is repaired into a different
 fact: a model answer that fails validation is retried once and then raised.
+
+## Untrusted input
+
+A URL, a `company_id` or a file path can come from a model answer, a request
+body or a command line, so none of them is trusted:
+
+* [`paths.py`](paths.py) is the only place that turns one into a filesystem
+  path. `contained()` resolves the result and refuses anything outside its
+  directory, which is what stops `../../etc/passwd` from naming a cache file.
+* `urllib` understands `file://` and `data:`, so `check_url()` allows only
+  `http(s)` with a host — a "website" of `file:///etc/passwd` fails before the
+  transport runs and never reaches the page cache.
+* The cache name is the SHA-256 of the URL, never the URL itself.
 
 ## Two extractors
 
