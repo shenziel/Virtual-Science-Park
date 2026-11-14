@@ -2,11 +2,15 @@
 # Owner: Backend 1. Cut-list item #1: everything must also run without Docker.
 #
 #   cp .env.example .env            # fill in model settings
-#   docker compose up --build       # api :8000, ui :3000 (pinned Lovable frontend image)
-#   docker compose --profile ollama up --build   # also start a local model
+#   docker compose up               # pulls the published api + ui images; api :8000, ui :3000
+#   docker compose up --build       # builds the api from this checkout instead
+#   docker compose --profile ollama up   # also start a local model
 #   docker compose run --rm api python -m agents.profiler   # one-off agent run
 
 x-app: &app
+  # Published backend image; pin a version with API_TAG=1.0.0 in .env.
+  image: pedroluis95/virtual-science-park-api:${API_TAG:-latest}
+  pull_policy: always
   build:
     context: .
     dockerfile: api/Dockerfile
@@ -32,11 +36,15 @@ services:
       timeout: 3s
       retries: 5
 
-  # Frontend (TypeScript/React built with Lovable), published as a pinned image
+  # Frontend (TypeScript/React built with Lovable), published as an image
   # from https://github.com/adCBueno/virtual-blue-science-park.
   # Its build-time settings are baked into the image; it listens on 3000.
   ui:
-    image: adcbueno1/virtual-science-park:1.0.0
+    # Newest published UI by default; pin a version with UI_TAG=1.3.0 in .env.
+    image: adcbueno1/virtual-science-park:${UI_TAG:-latest}
+    pull_policy: always
+    environment:
+      API_URL: http://api:8000  # the UI server calls the API on the Compose network
     ports:
       - "3000:3000"
     depends_on:
