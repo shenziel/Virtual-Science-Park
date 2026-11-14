@@ -2,7 +2,7 @@
 # Owner: Backend 1. Cut-list item #1: everything must also run without Docker.
 #
 #   cp .env.example .env            # fill in model settings
-#   docker compose up --build       # api :8000, ui :8501
+#   docker compose up --build       # api :8000 (the React UI is built in Lovable and runs separately)
 #   docker compose --profile ollama up --build   # also start a local model
 #   docker compose run --rm api python -m agents.profiler   # one-off agent run
 
@@ -31,17 +31,6 @@ services:
       interval: 10s
       timeout: 3s
       retries: 5
-
-  ui:
-    <<: *app
-    command: streamlit run ui/app.py --server.address 0.0.0.0 --server.port 8501
-    environment:
-      API_URL: http://api:8000
-    ports:
-      - "8501:8501"
-    depends_on:
-      api:
-        condition: service_healthy
 
   # Optional local model (MODEL_RUNTIME=ollama). Start with --profile ollama.
   ollama:
