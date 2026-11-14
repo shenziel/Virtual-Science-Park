@@ -5,8 +5,10 @@ Owner: Backend 3 (agents/monitors/)
 from __future__ import annotations
 
 import json
+import gzip
 import logging
 import re
+import zlib
 import urllib.error
 import urllib.request
 from datetime import date, datetime
@@ -176,12 +178,23 @@ class BaseMonitor:
 
     def fetch_url(self, url: str) -> Optional[str]:
         """Fetch remote URL with identifying user agent and timeout."""
-        headers = {"User-Agent": config.USER_AGENT, "Accept": "application/json, text/xml, */*"}
+        headers = {
+            "User-Agent": config.USER_AGENT,
+            "Accept": "application/json, text/xml, text/html, */*",
+            "Accept-Encoding": "gzip, deflate",
+        }
         req = urllib.request.Request(url, headers=headers)
         try:
             with urllib.request.urlopen(req, timeout=config.REQUEST_TIMEOUT_SECONDS) as response:
-                return response.read().decode("utf-8")
-        except (urllib.error.URLError, TimeoutError, OSError) as exc:
+                body = response.read()
+                encoding = response.headers.get("Content-Encoding", "").lower()
+                if encoding == "gzip":
+                    body = gzip.decompress(body)
+                elif encoding == "deflate":
+                    body = zlib.decompress(body)
+                charset = response.headers.get_content_charset() or "utf-8"
+                return body.decode(charset)
+        except (urllib.error.URLError, TimeoutError, OSError, UnicodeError, zlib.error) as exc:
             logger.warning(
                 "Live network fetch from %s (%s) failed (%s).",
                 self.source,
