@@ -32,6 +32,7 @@ unknown or expired token on an endpoint that needs login returns `401` with `WWW
 | GET | `/opportunities` | – → `[Opportunity]` | all | all | all |
 | POST | `/feedback` | `FeedbackIn` → `204` (`404` unknown opportunity) | 401 | own company (from session) | 403 (no company) |
 | POST | `/chat` | `ChatRequest` → `ChatResponse` | 401 | own company (from session) | 403 (no company) |
+| POST | `/admin/opportunities/refresh` | – → `RefreshResult` | 401 | 403 | refresh now |
 
 A private profile returns `404` to anyone who can't see it, not `403`, so the response doesn't reveal that the company exists.
 Writes check permission first: a company user writing to any other `company_id` gets `403`, whether or not that company exists.
@@ -45,5 +46,6 @@ Writes check permission first: a company user writing to any other `company_id` 
 - When the profiler runs again, it never overwrites or deletes a `user_confirmed` claim.
 - Agent output is saved with `visibility = private`.
 - After a claim edit or a new claim, the server re-runs the matcher for that company, so `GET /companies/{id}/recommendations` reflects the change right away. If the matcher fails, the edit is kept and the previous ranking stays.
+- Opportunities come from the monitors: at startup (unless `OPPORTUNITY_REFRESH=off`) and on admin refresh, the server fetches them, validates each against the contract, and stores the result as the complete set, replacing seeded mock opportunities. `is_simulated` and `cached_snapshot` are kept as the monitors set them. Vinnova items must be live: snapshot or simulated Vinnova items are dropped, and if the live fetch fails Vinnova stays empty (logged), with no fallback to mock data. Every company is re-ranked afterwards. Opportunities that disappear at the source are deleted together with their recommendations and feedback.
 - CORS allows only the origins in `UI_ORIGIN` (comma-separated), with the `Authorization` and `Content-Type` headers. No cookies are used.
 - Errors return FastAPI's default `{"detail": ...}` with codes `401`, `403`, `404` or `422`.
