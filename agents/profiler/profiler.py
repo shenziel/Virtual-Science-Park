@@ -34,7 +34,7 @@ class ProfilerAgent:
 
     def fetch_website(self, url: str) -> tuple[str, bool]:
         """Fetches website HTML with caching. Returns (html_content, is_cached)."""
-        url_hash = hashlib.md5(url.encode("utf-8")).hexdigest()
+        url_hash = hashlib.sha256(url.encode("utf-8")).hexdigest()
         cache_file = self.cache_dir / f"{url_hash}.html"
 
         if cache_file.exists():
