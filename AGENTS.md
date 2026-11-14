@@ -31,7 +31,16 @@ Anything not in this list is out of scope. Don't build it unless Backend 1 says 
 - **Frontend:** TypeScript + React, built with **Lovable** and synced to GitHub (repo: ________).
 - Docker Compose only if time allows (it's first on the cut list); it runs the backend only.
 
-The model runtime is **decided at kickoff**: an API key or a local model via Ollama. Record the decision here: `MODEL_RUNTIME = ________`. All LLM calls read the model and key from environment variables. Never hard-code them.
+The model runtime is decided: **`MODEL_RUNTIME = api` (OpenRouter)**. Models run on OpenRouter (`https://openrouter.ai/api/v1`, OpenAI-compatible) so nothing heavy runs locally. Each agent has its own key and model, with the variable names in `.env.example`:
+
+| Agent | Variables |
+|---|---|
+| Profiler | `MODEL_RUNTIME`, `MODEL_BASE_URL`, `MODEL_NAME`, `MODEL_API_KEY` |
+| Matcher | `MATCHER_BASE_URL`, `MATCHER_MODEL`, `MATCHER_API_KEY` |
+| Monitors | `MONITOR_BASE_URL`, `MONITOR_MODEL`, `MONITOR_API_KEY` |
+| Chat | `CHAT_BASE_URL`, `CHAT_MODEL`, `CHAT_API_KEY` |
+
+All LLM calls read the model and key from these environment variables. Never hard-code them. An empty key means the agent falls back to its rule-based behaviour; it must never crash. Keys live only in your local `.env`. To revert to a local model, follow the note at the top of `.env.example`.
 
 Don't add other languages (Python for the backend, TypeScript for the frontend), frameworks, databases or paid services.
 
