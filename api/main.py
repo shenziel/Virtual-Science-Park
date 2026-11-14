@@ -6,6 +6,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from api import admin, auth, companies, opportunities
+from api.chat import router as chat
 from db import database
 from db.refresh import refresh_opportunities
 from db.seed import seed_db
@@ -55,6 +56,7 @@ app.include_router(auth.router)
 app.include_router(companies.router)
 app.include_router(opportunities.router)
 app.include_router(admin.router)
+app.include_router(chat.router)
 
 
 @app.get("/health")

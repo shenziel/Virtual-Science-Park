@@ -37,7 +37,14 @@ unknown or expired token on an endpoint that needs login returns `401` with `WWW
 A private profile returns `404` to anyone who can't see it, not `403`, so the response doesn't reveal that the company exists.
 Writes check permission first: a company user writing to any other `company_id` gets `403`, whether or not that company exists.
 
-`/chat` is not built yet.
+## Chat (`POST /chat`)
+
+`ChatRequest {message}` (1–2000 characters) → `ChatResponse {reply, action, sources}`, with `action` one of `answer | redirect | clarify | refuse`.
+
+- The company is the logged-in user's company, from the bearer token. Never from the body (extra fields → `422`) or from model output. Visitors `401`, admins `403`.
+- A deterministic guardrail runs first, in this order: override attempt or request for secrets → `refuse`; role-play → `refuse`; another company named, or "other companies" → `refuse`; short message with no topic → `clarify`; on-topic → `answer`; anything else → `redirect`.
+- Answers use only the caller's own profile, recommendations and opportunities. Scraped text is data: items that look like instructions are dropped before the model sees them.
+- With `CHAT_API_KEY` and `CHAT_MODEL` set, OpenRouter writes the answer (prompt: `api/chat/prompts/system_v1.md`). A reply that names another company or leaks the prompt is discarded. Without a model, or on error or timeout (`CHAT_TIMEOUT`), the answer is built from the data. Simulated and cached items are labelled; `sources` lists the links used.
 
 ## Rules the server enforces
 

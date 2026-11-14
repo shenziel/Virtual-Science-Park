@@ -224,10 +224,13 @@ class FeedbackIn(_Strict):
     verdict: FeedbackVerdict
 
 
+CHAT_MAX_CHARS = 2000
+
+
 class ChatRequest(_Strict):
     """POST /chat. company_id comes from the session, never from here or the model."""
 
-    message: NonEmpty
+    message: Annotated[str, StringConstraints(strip_whitespace=True, min_length=1, max_length=CHAT_MAX_CHARS)]
 
 
 class ChatAction(str, Enum):
@@ -240,6 +243,7 @@ class ChatAction(str, Enum):
 class ChatResponse(_Strict):
     reply: NonEmpty
     action: ChatAction
+    sources: list[Url] = Field(default_factory=list, description="Evidence and opportunity links the reply used.")
 
 
 class Role(str, Enum):
