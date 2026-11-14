@@ -5,13 +5,19 @@ Request and response bodies are the models in `contracts/models.py`. The JSON Sc
 
 ## Auth
 
-Login sets an HTTP-only session cookie. Send it on every request. A request without a session counts as a **visitor**.
+Login with email and password returns a **bearer token**. Send it on every other request as
+`Authorization: Bearer <access_token>`. A request without a token counts as a **visitor**; a missing,
+unknown or expired token on an endpoint that needs login returns `401` with `WWW-Authenticate: Bearer`.
 
 | Method | Path | Body → Response | Who |
 |---|---|---|---|
-| POST | `/auth/login` | `LoginRequest` → `User` | anyone |
-| POST | `/auth/logout` | – → `204` | logged in |
-| GET | `/auth/me` | – → `User` | logged in (`401` otherwise) |
+| POST | `/auth/login` | `LoginRequest` → `LoginResponse` | anyone (`401` on wrong email or password, same message for both) |
+| POST | `/auth/logout` | – → `204` | logged in; the token stops working immediately |
+| GET | `/auth/me` | – → `User` | logged in |
+
+- Tokens are opaque and expire after `SESSION_TTL_HOURS` (default 12). Log in again to get a new one.
+- The server stores only a hash of each token. Passwords and hashes are never returned or logged.
+- Keep the token in memory or `sessionStorage` in the UI, never in a URL.
 
 ## Companies and profiles
 
