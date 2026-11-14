@@ -52,3 +52,6 @@ These throwaway passwords exist only for the local demo. The API hashes them wit
 | Email | Password | Role |
 |---|---|---|
 | admin@bsp.example.com | demo-admin-2026 | BSP admin |
+| demo@softhouse.example.com | demo-softhouse-2026 | company: softhouse |
+| demo@cleura.example.com | demo-cleura-2026 | company: cleura |
+| demo@ocean-harvesting.example.com | demo-ocean-harvesting-2026 | company: ocean-harvesting |

@@ -1,0 +1,145 @@
+{
+  "company_id": "ocean-harvesting",
+  "name": "Ocean Harvesting Technologies AB",
+  "website": "https://oceanharvesting.com",
+  "visibility": "private",
+  "is_simulated": false,
+  "updated_at": "2026-11-14T17:47:41.558886Z",
+  "claims": [
+    {
+      "id": "prod-1",
+      "field": "products_services",
+      "value": "InfinityWEC Solution",
+      "kind": "stated",
+      "evidence_url": "https://oceanharvesting.com",
+      "snippet": "InfinityWEC is a 500 kW point absorbing wave energy converter with a highly efficient, compact and light-weight power take-off, and a low-cost buoy made of high performance concrete and EPS in a honeycomb structure.",
+      "retrieved_at": "2026-11-14",
+      "confidence": 0.9,
+      "cached_snapshot": false
+    },
+    {
+      "id": "tech-1",
+      "field": "technologies",
+      "value": "InfinityWEC",
+      "kind": "stated",
+      "evidence_url": "https://oceanharvesting.com",
+      "snippet": "InfinityWEC is a 500 kW point absorbing wave energy converter with a highly efficient, compact and light-weight power take-off, and a low-cost buoy made of high performance concrete and EPS in a honeycomb structure.",
+      "retrieved_at": "2026-11-14",
+      "confidence": 0.9,
+      "cached_snapshot": false
+    },
+    {
+      "id": "exp-1",
+      "field": "expertise",
+      "value": "rigorous engineering discipline",
+      "kind": "stated",
+      "evidence_url": "https://oceanharvesting.com",
+      "snippet": "Ocean Harvesting Technology AB, based in Göteborg and Karlskrona, Sweden, combines entrepreneurial passion with rigorous engineering discipline.",
+      "retrieved_at": "2026-11-14",
+      "confidence": 0.85,
+      "cached_snapshot": false
+    },
+    {
+      "id": "app-1",
+      "field": "application_areas",
+      "value": "wave energy",
+      "kind": "stated",
+      "evidence_url": "https://oceanharvesting.com",
+      "snippet": "Harvesting Wave Energy",
+      "retrieved_at": "2026-11-14",
+      "confidence": 0.9,
+      "cached_snapshot": false
+    },
+    {
+      "id": "mkt-1",
+      "field": "markets",
+      "value": "gigawatt scale deployment",
+      "kind": "stated",
+      "evidence_url": "https://oceanharvesting.com",
+      "snippet": "At gigawatt scale deployment",
+      "retrieved_at": "2026-11-14",
+      "confidence": 0.8,
+      "cached_snapshot": false
+    },
+    {
+      "id": "ind-1",
+      "field": "industries",
+      "value": "renewable energy",
+      "kind": "inferred",
+      "evidence_url": "https://oceanharvesting.com",
+      "snippet": "The transition to renewable energy is critical to tackle climate change",
+      "retrieved_at": "2026-11-14",
+      "confidence": 0.9,
+      "cached_snapshot": false
+    },
+    {
+      "id": "cust-1",
+      "field": "customer_groups",
+      "value": "industrial partners",
+      "kind": "stated",
+      "evidence_url": "https://oceanharvesting.com",
+      "snippet": "Technology developed in cooperation with industrial partners and currently being validated with prototypes in EU-funded projects INFINITY and WECHULL+.",
+      "retrieved_at": "2026-11-14",
+      "confidence": 0.8,
+      "cached_snapshot": false
+    },
+    {
+      "id": "geo-1",
+      "field": "geographic_focus",
+      "value": "Göteborg and Karlskrona, Sweden",
+      "kind": "stated",
+      "evidence_url": "https://oceanharvesting.com",
+      "snippet": "Ocean Harvesting Technology AB, based in Göteborg and Karlskrona, Sweden",
+      "retrieved_at": "2026-11-14",
+      "confidence": 0.95,
+      "cached_snapshot": false
+    },
+    {
+      "id": "prio-1",
+      "field": "development_priorities",
+      "value": "making wave power cost-effective",
+      "kind": "stated",
+      "evidence_url": "https://oceanharvesting.com",
+      "snippet": "The team’s commitment to making wave power cost-effective drives every technical decision, from component and material selection to control algorithms.",
+      "retrieved_at": "2026-11-14",
+      "confidence": 0.9,
+      "cached_snapshot": false
+    },
+    {
+      "id": "proj-1",
+      "field": "projects",
+      "value": "Project INFINITY (2025 – 2027)",
+      "kind": "stated",
+      "evidence_url": "https://oceanharvesting.com",
+      "snippet": "Project INFINITY (2025 – 2027): Development of control system with MPC algorithm, build and test of InfinityWEC power take-off at scale 1:4.",
+      "retrieved_at": "2026-11-14",
+      "confidence": 0.95,
+      "cached_snapshot": false
+    },
+    {
+      "id": "collab-1",
+      "field": "collaborations",
+      "value": "EU-funded projects INFINITY and WECHULL+",
+      "kind": "stated",
+      "evidence_url": "https://oceanharvesting.com",
+      "snippet": "Technology developed in cooperation with industrial partners and currently being validated with prototypes in EU-funded projects INFINITY and WECHULL+.",
+      "retrieved_at": "2026-11-14",
+      "confidence": 0.9,
+      "cached_snapshot": false
+    },
+    {
+      "id": "topic-1",
+      "field": "topics",
+      "value": "Clean Energy Transition Partnership (CETP) program",
+      "kind": "stated",
+      "evidence_url": "https://oceanharvesting.com",
+      "snippet": "InfinityWECs performance, survivability and commercial potential are validated through participation in two on-going EU-funded projects in the Clean Energy Transition Partnership (CETP) program, perfect for Ocean Harvesting in terms of scope, partners and financing.",
+      "retrieved_at": "2026-11-14",
+      "confidence": 0.9,
+      "cached_snapshot": false
+    }
+  ],
+  "missing_fields": [
+    "what_it_does"
+  ]
+}
