@@ -25,8 +25,8 @@ from contracts.models import (
     User,
     Visibility,
 )
+from db.schema import SCHEMA_SQL
 
-SCHEMA = Path(__file__).with_name("schema.sql")
 DEFAULT_URL = "sqlite:///vsp.db"
 
 
@@ -51,7 +51,7 @@ def connect(url: str | None = None) -> sqlite3.Connection:
 
 
 def init_db(conn: sqlite3.Connection) -> None:
-    conn.executescript(SCHEMA.read_text(encoding="utf-8"))
+    conn.executescript(SCHEMA_SQL)
 
 
 def _now() -> str:
@@ -66,10 +66,11 @@ class NotFound(LookupError):
 
 
 def _claim_from_row(r: sqlite3.Row) -> Claim:
+    d = dict(r)
     return Claim(
-        id=r["id"], field=r["field"], value=r["value"], kind=r["kind"],
-        evidence_url=r["evidence_url"], snippet=r["snippet"], retrieved_at=r["retrieved_at"],
-        confidence=r["confidence"], cached_snapshot=bool(r["cached_snapshot"]),
+        id=d["id"], field=d["field"], value=d["value"], kind=d["kind"],
+        evidence_url=d["evidence_url"], snippet=d["snippet"], retrieved_at=d["retrieved_at"],
+        confidence=d["confidence"], cached_snapshot=bool(d["cached_snapshot"]),
     )
 
 
@@ -252,7 +253,8 @@ def upsert_user(conn: sqlite3.Connection, user: User, password_hash: str) -> Non
 
 
 def _user_from_row(r: sqlite3.Row) -> User:
-    return User(id=r["id"], email=r["email"], role=Role(r["role"]), company_id=r["company_id"])
+    d = dict(r)
+    return User(id=d["id"], email=d["email"], role=Role(d["role"]), company_id=d["company_id"])
 
 
 def get_user(conn: sqlite3.Connection, user_id: str) -> User:
