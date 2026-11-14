@@ -196,6 +196,21 @@ class VisibilityPatch(_Strict):
     visibility: Visibility
 
 
+class RefreshResult(_Strict):
+    """POST /admin/opportunities/refresh: what one monitor refresh did."""
+
+    fetched: int = 0
+    stored: int = 0
+    vinnova: int = 0
+    removed: int = 0
+    dropped_invalid: int = 0
+    dropped_vinnova_not_live: int = 0
+    dropped_duplicate: int = 0
+    failed: bool = False
+    rematched: list[str] = Field(default_factory=list)
+    rematch_failed: list[str] = Field(default_factory=list)
+
+
 class FeedbackVerdict(str, Enum):
     save = "save"
     relevant = "relevant"

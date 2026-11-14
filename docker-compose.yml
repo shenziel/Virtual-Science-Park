@@ -2,7 +2,7 @@
 # Owner: Backend 1. Cut-list item #1: everything must also run without Docker.
 #
 #   cp .env.example .env            # fill in model settings
-#   docker compose up --build       # api :8000 (the React UI is built in Lovable and runs separately)
+#   docker compose up --build       # api :8000, ui :3000 (pinned Lovable frontend image)
 #   docker compose --profile ollama up --build   # also start a local model
 #   docker compose run --rm api python -m agents.profiler   # one-off agent run
 
@@ -31,6 +31,17 @@ services:
       interval: 10s
       timeout: 3s
       retries: 5
+
+  # Frontend (TypeScript/React built with Lovable), published as a pinned image
+  # from https://github.com/adCBueno/virtual-blue-science-park.
+  # Its build-time settings are baked into the image; it listens on 3000.
+  ui:
+    image: adcbueno1/virtual-science-park:1.0.0
+    ports:
+      - "3000:3000"
+    depends_on:
+      api:
+        condition: service_healthy
 
   # Optional local model (MODEL_RUNTIME=ollama). Start with --profile ollama.
   ollama:

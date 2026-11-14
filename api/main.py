@@ -5,18 +5,26 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from api import auth, companies, opportunities
+from api import admin, auth, companies, opportunities
 from db import database
+from db.refresh import refresh_opportunities
 from db.seed import seed_db
 
 
 def prepare_database() -> None:
-    """Create tables; seed from SEED_DIR when the database has no users yet."""
+    """Create tables; seed from SEED_DIR when the database has no users yet.
+
+    Then, unless OPPORTUNITY_REFRESH=off, refresh opportunities from the
+    monitors so the API never serves seeded mock opportunities as current ones.
+    This runs before the API accepts requests.
+    """
     conn = database.connect()
     try:
         database.init_db(conn)
         if database.count_users(conn) == 0:
             seed_db(conn)
+        if (os.environ.get("OPPORTUNITY_REFRESH") or "startup").strip().lower() != "off":
+            refresh_opportunities(conn)
     finally:
         conn.close()
 
@@ -46,6 +54,7 @@ app.add_middleware(
 app.include_router(auth.router)
 app.include_router(companies.router)
 app.include_router(opportunities.router)
+app.include_router(admin.router)
 
 
 @app.get("/health")
