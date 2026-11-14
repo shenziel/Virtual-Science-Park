@@ -29,6 +29,7 @@ unknown or expired token on an endpoint that needs login returns `401` with `WWW
 | POST | `/companies/{id}/claims` | `ClaimCreate` → `Claim` (201) | 401 | own only, else 403 | all |
 | PATCH | `/companies/{id}/visibility` | `VisibilityPatch` → `Profile` | 401 | own only, else 403 | all |
 | GET | `/companies/{id}/recommendations` | – → `[Recommendation]`, best first | published only | own or published | all |
+| GET | `/companies/{id}/representative` | – → `Representative {company_id, email}` (`404` unknown company or no account) | 401 | 403 (own company too) | all |
 | GET | `/opportunities` | – → `[Opportunity]` | all | all | all |
 | POST | `/feedback` | `FeedbackIn` → `204` (`404` unknown opportunity) | 401 | own company (from session) | 403 (no company) |
 | POST | `/chat` | `ChatRequest` → `ChatResponse` | 401 | own company (from session) | 403 (no company) |
@@ -49,6 +50,7 @@ Writes check permission first: a company user writing to any other `company_id` 
 ## Rules the server enforces
 
 - `company_id` for `/chat` and `/feedback` comes from the **session only**. It never comes from the request body or from model output.
+- `GET /companies/{id}/representative` is for BSP staff preparing outreach: it returns the company account's email and nothing else (never a password or hash). The admin check runs before the lookup, so a `403` reveals nothing about the company.
 - Every claim written through `PATCH` or `POST` gets `kind = user_confirmed` and `confidence = 1.0`, with `retrieved_at` set to today. On a user-written claim, `evidence_url` and `snippet` are null.
 - When the profiler runs again, it never overwrites or deletes a `user_confirmed` claim.
 - Agent output is saved with `visibility = private`.

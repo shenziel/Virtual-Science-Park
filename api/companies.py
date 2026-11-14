@@ -8,7 +8,7 @@ import sqlite3
 from fastapi import APIRouter, Depends, status
 
 from api.deps import current_user, get_conn, optional_user
-from api.permissions import can_view, not_found, require_edit
+from api.permissions import can_view, not_found, require_admin, require_edit
 from contracts.models import (
     Claim,
     ClaimCreate,
@@ -16,6 +16,7 @@ from contracts.models import (
     CompanySummary,
     Profile,
     Recommendation,
+    Representative,
     User,
     VisibilityPatch,
 )
@@ -129,3 +130,19 @@ def list_recommendations(
 ) -> list[Recommendation]:
     _visible_profile(conn, user, company_id)
     return database.list_recommendations(conn, company_id)
+
+
+@router.get("/{company_id}/representative", response_model=Representative)
+def get_representative(
+    company_id: str,
+    user: User = Depends(current_user),
+    conn: sqlite3.Connection = Depends(get_conn),
+) -> Representative:
+    """The company account's email, so BSP staff can prepare outreach. Admins only."""
+    require_admin(user)
+    try:
+        database.get_profile(conn, company_id)
+        email = database.get_company_account_email(conn, company_id)
+    except database.NotFound:
+        raise not_found() from None
+    return Representative(company_id=company_id, email=email)

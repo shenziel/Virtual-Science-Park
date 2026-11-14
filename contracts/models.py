@@ -246,6 +246,13 @@ class ChatResponse(_Strict):
     sources: list[Url] = Field(default_factory=list, description="Evidence and opportunity links the reply used.")
 
 
+class Representative(_Strict):
+    """GET /companies/{id}/representative (BSP admins only): where outreach about this company goes."""
+
+    company_id: Slug
+    email: NonEmpty
+
+
 class Role(str, Enum):
     company = "company"
     admin = "admin"
