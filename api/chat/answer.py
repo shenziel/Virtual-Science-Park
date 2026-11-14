@@ -129,13 +129,52 @@ def deterministic_answer(message: str, ctx: Context) -> tuple[str, list[str]]:
 # ----------------------------------------------------------------- model
 
 
+# Known OpenAI-compatible providers. The key's prefix tells which one it belongs to.
+PROVIDERS = {
+    "openrouter": {"key_prefix": "sk-or-", "base_url": "https://openrouter.ai/api/v1",
+                   "default_model": "openai/gpt-4o-mini"},
+    "nvidia": {"key_prefix": "nvapi-", "base_url": "https://integrate.api.nvidia.com/v1",
+               "default_model": "nvidia/nemotron-3.5-bolt-e4b"},
+}
+
+
+def provider_for_key(key: str) -> str | None:
+    return next((name for name, p in PROVIDERS.items() if key.startswith(p["key_prefix"])), None)
+
+
+def provider_for_url(url: str) -> str | None:
+    host = httpx.URL(url).host if url else ""
+    return next((name for name, p in PROVIDERS.items() if httpx.URL(p["base_url"]).host == host), None)
+
+
 def _settings() -> tuple[str, str, str, float]:
-    return (
-        (os.environ.get("CHAT_BASE_URL") or "https://openrouter.ai/api/v1").rstrip("/"),
-        os.environ.get("CHAT_MODEL") or "",
-        os.environ.get("CHAT_API_KEY") or "",
-        float(os.environ.get("CHAT_TIMEOUT") or 15),
-    )
+    """(base_url, model, key, timeout) for the chat model.
+
+    CHAT_BASE_URL wins, except when it names a known provider that the key
+    cannot belong to (e.g. an NVIDIA `nvapi-` key with the OpenRouter URL):
+    then the key's provider is used and a warning is logged. Custom URLs (a
+    local Ollama, a proxy) are always respected. CHAT_MODEL falls back to the
+    provider's default model.
+    """
+    key = (os.environ.get("CHAT_API_KEY") or "").strip()
+    url = (os.environ.get("CHAT_BASE_URL") or "").strip().rstrip("/")
+    by_key, by_url = provider_for_key(key), provider_for_url(url)
+    if by_key and by_url and by_key != by_url:
+        log.warning("CHAT_API_KEY belongs to %s but CHAT_BASE_URL points at %s; using %s", by_key, by_url, by_key)
+        url = ""
+    provider = by_key if not url else by_url
+    if not url:
+        url = PROVIDERS[provider or "openrouter"]["base_url"]
+    model = (os.environ.get("CHAT_MODEL") or "").strip() or (PROVIDERS[provider]["default_model"] if provider else "")
+    return url, model, key, float(os.environ.get("CHAT_TIMEOUT") or 15)
+
+
+_THINK = re.compile(r"(?is)<think>.*?</think>")
+
+
+def _clean_reply(content: str | None) -> str | None:
+    """Drop reasoning blocks some models inline; empty means no usable answer."""
+    return _THINK.sub("", content or "").strip() or None
 
 
 def llm_answer(message: str, ctx: Context, post=httpx.post) -> str | None:
@@ -154,9 +193,12 @@ def llm_answer(message: str, ctx: Context, post=httpx.post) -> str | None:
             timeout=timeout,
         )
         resp.raise_for_status()
-        return resp.json()["choices"][0]["message"]["content"].strip() or None
-    except Exception:  # noqa: BLE001 - fall back to the deterministic answer
-        log.exception("chat model call failed; using the deterministic answer")
+        reply = _clean_reply(resp.json()["choices"][0]["message"].get("content"))
+        if reply is None:
+            log.warning("chat model returned no answer text; using the deterministic answer")
+        return reply
+    except Exception as exc:  # noqa: BLE001 - fall back to the deterministic answer
+        log.warning("chat model call failed (%s); using the deterministic answer", type(exc).__name__)
         return None
 
 
