@@ -1,9 +1,10 @@
+import gzip
 import json
 from datetime import date
 
 import pytest
 
-from agents.profiler.fetch import CachedFetcher, FetchError, RobotsDenied
+from agents.profiler.fetch import CachedFetcher, FetchError, RobotsDenied, http_transport
 from agents.profiler.tests.conftest import (
     PAGE_HTML,
     PAGE_URL,
@@ -11,6 +12,32 @@ from agents.profiler.tests.conftest import (
     FakeClock,
     FakeTransport,
 )
+
+
+def test_http_transport_decompresses_gzip_response(monkeypatch):
+    class FakeResponse:
+        headers = {"Content-Encoding": "gzip"}
+
+        def __enter__(self):
+            return self
+
+        def __exit__(self, *_):
+            return None
+
+        def geturl(self):
+            return PAGE_URL
+
+        def read(self, _limit):
+            return gzip.compress(PAGE_HTML.encode("utf-8"))
+
+    monkeypatch.setattr(
+        "agents.profiler.fetch.request.urlopen",
+        lambda _request, timeout: FakeResponse(),
+    )
+
+    _, body = http_transport(PAGE_URL, "BlueScienceParkProfiler/1.0", 1.0)
+
+    assert body == PAGE_HTML.encode("utf-8")
 
 
 def test_fetch_sends_identifying_user_agent(transport, fetcher):
