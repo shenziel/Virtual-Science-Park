@@ -187,7 +187,7 @@ def test_real_companies_file_is_loadable():
     from fixtures.loader import FIXTURES
 
     ids = [c["company_id"] for c in ingest.load_companies(FIXTURES / "companies.json")]
-    assert ids == ["softhouse", "cleura", "cmarine"]
+    assert ids == ["softhouse", "cleura"]  # third company (replacing cmarine) still to be chosen
 
 
 def test_default_fetch_applies_refresh_rules(monkeypatch):

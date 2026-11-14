@@ -2,7 +2,7 @@
 
     python -m db.ingest                       # all companies, all agents
     python -m db.ingest --only cleura         # one company (others keep their files)
-    python -m db.ingest --html cmarine=pages/cmarine.html   # hand-saved page
+    python -m db.ingest --html cleura=pages/cleura.html     # hand-saved page
     python -m db.ingest --skip-profiler       # reuse saved profiles, refresh the rest
     python -m db.ingest --dry-run             # validate and report, write nothing
     python -m db.ingest --seed                # also load the result into the database
