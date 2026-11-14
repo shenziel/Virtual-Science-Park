@@ -60,6 +60,7 @@ and `fallback_on_llm_error=False`.
 | Cache file names are hashes, and the resolved path must stay inside the cache directory | `paths.py`, `fetch.py` |
 | `load(company_id)` validates the slug and the path, so `../` cannot name a file | `profiler.py` |
 | `--html` / `--existing` must be existing regular files; `--out` needs a real directory | `paths.py` |
+| The page cache records only the retrieval date; the URL is never written to disk | `fetch.py` |
 
 Dropped claims are logged with the reason. Nothing is repaired into a different
 fact: a model answer that fails validation is retried once and then raised.
@@ -75,7 +76,9 @@ body or a command line, so none of them is trusted:
 * `urllib` understands `file://` and `data:`, so `check_url()` allows only
   `http(s)` with a host — a "website" of `file:///etc/passwd` fails before the
   transport runs and never reaches the page cache.
-* The cache name is the SHA-256 of the URL, never the URL itself.
+* The cache name is the SHA-256 of the URL, never the URL itself, and the
+  sidecar next to a cached page holds only the retrieval date, so an untrusted
+  URL is never repeated into a file.
 
 ## Two extractors
 

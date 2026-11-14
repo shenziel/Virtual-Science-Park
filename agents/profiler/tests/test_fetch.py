@@ -1,3 +1,4 @@
+import json
 from datetime import date
 
 import pytest
@@ -137,6 +138,23 @@ def test_cache_file_names_are_hashes_and_never_escape_the_cache_dir(tmp_path, tr
     assert all(name.endswith((".html", ".json")) for name in names)
     assert all(len(name.split(".")[0]) == 32 for name in names)  # a hash, not a path
     assert not (tmp_path / "etc").exists()
+
+
+def test_cache_metadata_holds_the_date_and_never_the_untrusted_url(tmp_path, transport):
+    """The URL can come from a model or a command line, so it must not be written.
+
+    Static analysis treats any value derived from that URL reaching a file write
+    as a path-injection risk, and it is right to: the sidecar records the date
+    only, and the URL is recoverable from the cache name (its SHA-256).
+    """
+    cache = tmp_path / "pages"
+    fetcher = CachedFetcher(cache_dir=cache, transport=transport, min_interval=0.0)
+    fetcher.fetch(PAGE_URL)
+
+    (meta_path,) = cache.glob("*.json")
+    written = meta_path.read_text(encoding="utf-8")
+    assert "nordsense.example" not in written
+    assert json.loads(written) == {"retrieved_at": date.today().isoformat()}
 
 
 def test_snapshot_must_be_an_existing_regular_file(tmp_path):

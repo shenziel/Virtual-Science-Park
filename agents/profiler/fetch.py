@@ -143,17 +143,10 @@ class CachedFetcher:
         html = body.decode("utf-8", errors="replace")
         retrieved_at = self.today()
         html_path.write_text(html, encoding="utf-8")
-        meta_path.write_text(
-            json.dumps(
-                {
-                    "url": url,
-                    "final_url": final_url,
-                    "retrieved_at": retrieved_at.isoformat(),
-                }
-            ),
-            encoding="utf-8",
-        )
+        self._record_retrieval(meta_path, retrieved_at)
         logger.info("Fetched %s (%d chars)", url, len(html))
+        if final_url != url:
+            logger.info("%s redirected to %s", url, final_url)
         return SourcePage(url=url, html=html, retrieved_at=retrieved_at, cached=False)
 
     def load_snapshot(self, url: str, path: str | Path) -> SourcePage:
@@ -189,6 +182,21 @@ class CachedFetcher:
             )
         except UnsafePathError as exc:  # pragma: no cover - defensive
             raise FetchError(str(exc)) from exc
+
+    def _record_retrieval(self, meta_path: Path, retrieved_at: date) -> None:
+        """Write the retrieval date next to a cached page.
+
+        Only the date is written. The requested URL can come from a model answer
+        or a command line, and a value from outside the agent must never reach a
+        file write: the URL is already the cache file name (its SHA-256) and
+        ``fetch()`` hands it back inside ``SourcePage``, so repeating it here
+        would add no information and one injection surface.
+
+        The final URL after redirects is logged, not cached, for the same reason.
+        """
+        meta_path.write_text(
+            json.dumps({"retrieved_at": retrieved_at.isoformat()}), encoding="utf-8"
+        )
 
     def _cached_date(self, meta_path: Path) -> date:
         try:
