@@ -148,8 +148,8 @@ class VinnovaFundingMonitor(BaseMonitor):
         if force_cache:
             return self.load_cached_snapshot()
 
-        calls_url = f"{config.VINNOVA_API_BASE_URL}/utlysningar/{config.VINNOVA_UPDATED_SINCE}"
-        rounds_url = f"{config.VINNOVA_API_BASE_URL}/ansokningsomgangar/{config.VINNOVA_UPDATED_SINCE}"
+        calls_url = f"{config.VINNOVA_API_URL}/{config.VINNOVA_UPDATED_SINCE}"
+        rounds_url = f"{config.VINNOVA_ROUNDS_API_URL}/{config.VINNOVA_UPDATED_SINCE}"
         calls_text = self.fetch_url(calls_url)
         rounds_text = self.fetch_url(rounds_url)
         if not calls_text or not rounds_text:

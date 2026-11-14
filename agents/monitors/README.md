@@ -19,6 +19,7 @@ Per AGENTS.md §5:
 - **Offline Behavior:** Blue Science Park events can use a dated, labelled cached snapshot. Vinnova funding returns no items if the live API is unavailable; there is no fabricated funding snapshot.
 - **Badging / Labelling:** Cached event items explicitly set `cached_snapshot=True`. Vinnova results always come from live API responses and set `cached_snapshot=False`.
 - **Vinnova API:** Reads calls and application rounds from the documented `data.vinnova.se` endpoints, joins them by case number, and emits only public rounds with a future closing date. `VINNOVA_UPDATED_SINCE` can override the default two-year lookback date.
+- **Environment names:** Source settings use `MONITOR_REQUEST_TIMEOUT`, `VINNOVA_API_URL`, `VINNOVA_UPDATED_SINCE`, and `BSP_EVENTS_FEED_URL`, matching `.env.example`. `MONITOR_BASE_URL`, `MONITOR_MODEL`, and `MONITOR_API_KEY` are also read there for consistency, but this deterministic monitor currently makes no LLM calls.
 - **Identifying User-Agent:** All HTTP requests send:
   `VirtualScienceParkBot/1.0 (+https://www.bluesciencepark.se; contact@bluesciencepark.se)`
 - **Validation:** Every item returned by `fetch_all_opportunities()` validates against `contracts.models.Opportunity`.
