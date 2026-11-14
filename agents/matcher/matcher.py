@@ -206,13 +206,7 @@ def _build_why_llm(
     Returns deterministic fallback on any error.
     """
     try:
-        import openai  # type: ignore
-
-        client_kwargs: dict = {"api_key": config.MATCHER_API_KEY}
-        if config.MATCHER_BASE_URL:
-            client_kwargs["base_url"] = config.MATCHER_BASE_URL
-
-        client = openai.OpenAI(**client_kwargs)
+        import httpx
 
         claim_lines = "\n".join(
             f"- [{c.kind.value}] {c.field.value}: {c.value}" for c in matched_claims[:5]
@@ -230,16 +224,28 @@ def _build_why_llm(
             "Write a one-sentence explanation of why this opportunity matches."
         )
 
-        response = client.chat.completions.create(
-            model=config.MATCHER_MODEL,
-            messages=[
-                {"role": "system", "content": system_prompt},
-                {"role": "user", "content": user_message},
-            ],
-            max_tokens=120,
-            temperature=0.3,
+        response = httpx.post(
+            f"{config.MATCHER_BASE_URL}/chat/completions",
+            json={
+                "model": config.MATCHER_MODEL,
+                "messages": [
+                    {"role": "system", "content": system_prompt},
+                    {"role": "user", "content": user_message},
+                ],
+                "max_tokens": 120,
+                "temperature": 0.3,
+            },
+            headers={
+                "Authorization": f"Bearer {config.MATCHER_API_KEY}",
+                "Content-Type": "application/json",
+            },
+            timeout=config.MATCHER_TIMEOUT_SECONDS,
         )
-        return response.choices[0].message.content.strip()
+        response.raise_for_status()
+        content = response.json()["choices"][0]["message"]["content"]
+        if not isinstance(content, str) or not content.strip():
+            raise ValueError("empty or invalid explanation in matcher response")
+        return content.strip()
 
     except Exception as exc:  # noqa: BLE001
         logger.warning("LLM why-generation failed (%s); using deterministic fallback.", exc)

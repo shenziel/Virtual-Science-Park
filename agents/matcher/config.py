@@ -39,6 +39,12 @@ MIN_SCORE_THRESHOLD: float = 0.05
 # ---------------------------------------------------------------------------
 import os
 
-MATCHER_MODEL: str = os.getenv("MATCHER_MODEL", "gpt-4o-mini")
+MATCHER_MODEL: str = os.getenv("MATCHER_MODEL", "openai/gpt-4o-mini")
 MATCHER_API_KEY: str | None = os.getenv("MATCHER_API_KEY")
-MATCHER_BASE_URL: str | None = os.getenv("MATCHER_BASE_URL")
+MATCHER_BASE_URL: str = os.getenv(
+    "MATCHER_BASE_URL", "https://openrouter.ai/api/v1"
+).rstrip("/")
+
+# Re-matching can happen after every claim edit, so fail over to the local
+# deterministic explanation quickly when the provider is slow.
+MATCHER_TIMEOUT_SECONDS: float = 5.0
