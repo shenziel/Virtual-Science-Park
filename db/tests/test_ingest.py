@@ -212,3 +212,35 @@ def test_default_fetch_survives_monitor_failure(monkeypatch):
 
     monkeypatch.setattr(agents.monitors, "fetch_all_opportunities", broken)
     assert ingest.default_fetch_fn()() == []
+
+
+# ------------------------------------------------- path traversal (S2083)
+
+
+@pytest.mark.parametrize("bad_id", ["../../etc/passwd", "../outside", "a/b", "/abs", "UPPER", "", "-lead"])
+def test_companies_file_rejects_unsafe_company_ids(out, bad_id):
+    (out / "companies.json").write_text(json.dumps([{"company_id": bad_id, "name": "X", "website": "https://x.example.com"}]))
+    with pytest.raises(ingest.IngestError, match="company_id"):
+        run(out)
+
+
+@pytest.mark.parametrize("bad_site", ["javascript:alert(1)", "file:///etc/passwd", "ftp://x.example.com"])
+def test_companies_file_rejects_non_http_websites(out, bad_site):
+    (out / "companies.json").write_text(json.dumps([{"company_id": "alpha", "name": "X", "website": bad_site}]))
+    with pytest.raises(ingest.IngestError, match="website"):
+        run(out)
+
+
+def test_profile_path_stays_inside_profiles(out):
+    assert ingest._profile_path(out, "alpha") == (out / "profiles" / "alpha.json").resolve()
+    for bad in ["../evil", "a/../../evil", "/etc/passwd"]:
+        with pytest.raises(ingest.IngestError):
+            ingest._profile_path(out, bad)
+
+
+def test_symlink_escape_is_blocked(out, tmp_path):
+    outside = tmp_path / "outside.json"
+    outside.write_text("{}")
+    (out / "profiles" / "alpha.json").symlink_to(outside)
+    with pytest.raises(ingest.IngestError, match="escapes"):
+        ingest._profile_path(out, "alpha")

@@ -22,6 +22,7 @@ import argparse
 import json
 import logging
 import os
+import re
 import sys
 from collections.abc import Callable, Sequence
 from dataclasses import dataclass, field
@@ -100,13 +101,38 @@ def default_match_fn() -> MatchFn:
 # ------------------------------------------------------------------- I/O
 
 
+_SLUG = re.compile(r"[a-z0-9][a-z0-9-]*")
+_HTTP_URL = re.compile(r"https?://\S+")
+
+
 def load_companies(path: Path) -> list[dict]:
+    """Read companies.json. company_id must be a plain slug: it becomes a file name."""
     companies = json.loads(path.read_text(encoding="utf-8"))
     for c in companies:
         missing = {"company_id", "name", "website"} - set(c)
         if missing:
-            raise IngestError(f"{path}: entry {c!r} is missing {sorted(missing)}")
+            raise IngestError(f"{path}: an entry is missing {sorted(missing)}")
+        if not isinstance(c["company_id"], str) or not _SLUG.fullmatch(c["company_id"]):
+            raise IngestError(f"{path}: company_id must match {_SLUG.pattern}")
+        if not isinstance(c["website"], str) or not _HTTP_URL.fullmatch(c["website"]):
+            raise IngestError(f"{path}: website must be an http(s) URL")
     return companies
+
+
+def _profile_path(out_dir: Path, company_id: str) -> Path:
+    """profiles/<company_id>.json, guaranteed to stay inside the profiles folder.
+
+    company_id comes from companies.json (file content), so it is checked
+    twice: it must be a plain slug, and the resolved path must still be inside
+    the profiles folder (no '..', no symlink escape).
+    """
+    if not _SLUG.fullmatch(company_id):
+        raise IngestError("company_id must be a plain slug")
+    base = os.path.realpath(out_dir / "profiles")
+    candidate = os.path.realpath(os.path.join(base, f"{company_id}.json"))
+    if not candidate.startswith(base + os.sep):
+        raise IngestError("profile path escapes the profiles folder")
+    return Path(candidate)
 
 
 def _read_model(path: Path, model: type[BaseModel]):
@@ -174,7 +200,7 @@ def run_ingest(
     run_profiler = None if skip_profiler else (profile_fn or default_profile_fn())
     for company in companies:
         cid = company["company_id"]
-        previous = _read_model(out_dir / "profiles" / f"{cid}.json", Profile)
+        previous = _read_model(_profile_path(out_dir, cid), Profile)
         if run_profiler is None or (only and cid not in only):
             if previous is not None:
                 profiles[cid] = previous
@@ -214,7 +240,7 @@ def run_ingest(
     if dry_run:
         return report
     for cid in report.profiled:
-        _write_atomic(out_dir / "profiles" / f"{cid}.json", profiles[cid].model_dump_json(indent=2) + "\n")
+        _write_atomic(_profile_path(out_dir, cid), profiles[cid].model_dump_json(indent=2) + "\n")
         report.written.append(f"profiles/{cid}.json")
     if not skip_monitors:
         _write_atomic(opps_path, _dump(opps))
